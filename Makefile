@@ -2,7 +2,7 @@ C := gcc
 
 PROJECT := emu.dll
 OPT_F := -O2 -Os -s
-SOR := cpu.c 
+SOR := cpu.c gpu.c
 
 all: $(PROJECT) test1
 
