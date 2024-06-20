@@ -21,6 +21,10 @@ CPU* CPU_CreateCPU() {
     memset(_cpu->reg, 0, sizeof(_cpu->reg));
     _cpu->pc = 0;
     _cpu->run = TRUE;
+
+    _cpu->port = 0;
+    _cpu->vto_port = 0;
+
     return _cpu;
 }
 
@@ -219,6 +223,26 @@ void CPU_Execute(CPU* cpu) {
         if (val1 == val2)
             cpu->pc = cpu->memory[cpu->pc];
         else cpu->pc++;
+        break;
+
+    // ======= OUT
+    case 0xd1: // OUT <value> R1
+        cpu->pc++;
+        cpu->port = cpu->memory[cpu->pc];
+        cpu->vto_port = cpu->reg[0];
+        cpu->pc++;
+        break;
+    case 0xd2: // OUT <value> R2
+        cpu->pc++;
+        cpu->port = cpu->memory[cpu->pc];
+        cpu->vto_port = cpu->reg[1];
+        cpu->pc++;
+        break;
+    case 0xd3: // OUT <value> R3
+        cpu->pc++;
+        cpu->port = cpu->memory[cpu->pc];
+        cpu->vto_port = cpu->reg[2];
+        cpu->pc++;
         break;
 
     // END==================================

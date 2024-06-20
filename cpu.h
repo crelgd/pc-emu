@@ -16,6 +16,7 @@ typedef struct {
     int pc;
     int run;
     uint port;
+    uint vto_port;
 } CPU;
 
 #ifdef __cplusplus

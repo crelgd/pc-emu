@@ -10,8 +10,18 @@ Y - к примеру 2
 
 Пример:
 
+mov r1, 3 ; X pos
+mov r2, 2 ; Y pos
+out 0x80, r1
+out 0x81, r2
+mov r1, 0x00 ; Color WHITE
+out 0x82, r1
+mov r1, 1 ; STATUS: draw
+out 0x83, r1
+
 Монитор 5x3
 
 00000
 00100
 00000
+
