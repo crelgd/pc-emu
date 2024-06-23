@@ -37,6 +37,7 @@ extern "C" {
 
 EMU_API GPU* GPU_CreateGPU();
 EMU_API void GPU_CheckPort(CPU* cpu, GPU* gpu);
+EMU_API void GPU_Check(GPU* gpu);
 EMU_API void GPU_Quit(GPU* gpu);
 
 #ifdef __cplusplus

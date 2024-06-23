@@ -30,10 +30,15 @@ void GPU_CheckPort(CPU* cpu, GPU* gpu) {
     case 0x83:
         gpu->status = cpu->vto_port;
         if (gpu->status == 1) {
+            GPU_Check(gpu);
             gpu->status = 0;
         }
         break;
     }
+}
+
+void GPU_Check(GPU* gpu) {
+    gpu->videomemory[HEIGHT*gpu->pixel_y+gpu->pixel_x] = gpu->pixel_color;
 }
 
 void GPU_Quit(GPU* gpu) {
