@@ -7,8 +7,8 @@
 #define TRUE 1
 #define FALSE 0
 typedef unsigned int uint;
-#define MEM 1024
 #define REG 3
+#define MEM 1000000
 
 typedef struct {
     uint memory[MEM];

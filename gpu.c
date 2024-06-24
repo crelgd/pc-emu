@@ -38,7 +38,9 @@ void GPU_CheckPort(CPU* cpu, GPU* gpu) {
 }
 
 void GPU_Check(GPU* gpu) {
-    gpu->videomemory[HEIGHT*gpu->pixel_y+gpu->pixel_x] = gpu->pixel_color;
+    if (gpu->pixel_x < WIDTH && gpu->pixel_y < HEIGHT) {
+        gpu->videomemory[HEIGHT * gpu->pixel_y + gpu->pixel_x] = gpu->pixel_color;
+    }
 }
 
 void GPU_Quit(GPU* gpu) {
