@@ -12,13 +12,12 @@ void EMU_RunEmulator(CPU* cpu, GPU* gpu) {
 }
 */
 
-const uint* EMU_GetCodeFromFile(const char* filename) {
+const uint* EMU_GetCodeFromFile(const char* filename, size_t* out_size) {
     FILE *file;
-    unsigned char buffer[1];
     uint* code = NULL;
     size_t count = 0;
 
-    file = fopen(filename, "rb");
+    file = fopen(filename, "r");
     if (file == NULL) {
         perror("Ошибка открытия файла");
         return NULL;
@@ -28,17 +27,22 @@ const uint* EMU_GetCodeFromFile(const char* filename) {
     long file_size = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    code = (uint*)malloc(file_size * sizeof(uint));
+    code = (int*)malloc(file_size * sizeof(int));
     if (code == NULL) {
         fclose(file);
         return NULL;
     }
 
-    while (fread(buffer, sizeof(unsigned char), 1, file) == 1) {
-        code[count++] = buffer[0];
+    int ch;
+    while ((ch = fgetc(file)) != EOF) {
+        code[count++] = ch;
     }
 
     fclose(file);
+
+    if (out_size != NULL) {
+        *out_size = count;
+    }
 
     return code;
 }

@@ -25,6 +25,9 @@ CPU* CPU_CreateCPU() {
     _cpu->port = 0;
     _cpu->vto_port = 0;
 
+    _cpu->val1 = 0;
+    _cpu->val2 = 0;
+
     return _cpu;
 }
 
@@ -40,8 +43,6 @@ void CPU_LoadProgram(CPU* cpu, const uint* program, size_t size) {
 
 void CPU_Execute(CPU* cpu) {
     int value;
-    int val1;
-    int val2;
 
     switch (cpu->memory[cpu->pc]) {
     //              ALL MOV
@@ -152,22 +153,22 @@ void CPU_Execute(CPU* cpu) {
     //              ALL CMP
     case 0xf1: // CMP R1 <value>
         cpu->pc++;
-        val1 = cpu->memory[cpu->pc];
-        val2 = cpu->reg[0];
+        cpu->val1 = cpu->memory[cpu->pc];
+        cpu->val2 = cpu->reg[0];
         cpu->pc++;
         break;
 
     case 0xf2: // CMP R2 <value>
         cpu->pc++;
-        val1 = cpu->memory[cpu->pc];
-        val2 = cpu->reg[1];
+        cpu->val1 = cpu->memory[cpu->pc];
+        cpu->val2 = cpu->reg[1];
         cpu->pc++;
         break;
 
     case 0xf3: // CMP R3 <value>
         cpu->pc++;
-        val1 = cpu->memory[cpu->pc];
-        val2 = cpu->reg[2];
+        cpu->val1 = cpu->memory[cpu->pc];
+        cpu->val2 = cpu->reg[2];
         cpu->pc++;
         break;
 
@@ -175,23 +176,23 @@ void CPU_Execute(CPU* cpu) {
         cpu->pc++;
         value = cpu->memory[cpu->pc];
         if (value == 10) { // CMP R1, R2
-            val1 = cpu->reg[0];
-            val2 = cpu->reg[1];
+            cpu->val1 = cpu->reg[0];
+            cpu->val2 = cpu->reg[1];
         } else if (value == 11) { // CMP R1, R3
-            val1 = cpu->reg[0];
-            val2 = cpu->reg[2];
+            cpu->val1 = cpu->reg[0];
+            cpu->val2 = cpu->reg[2];
         } else if (value == 12) { // CMP R2, R1
-            val1 = cpu->reg[1];
-            val2 = cpu->reg[0];
+            cpu->val1 = cpu->reg[1];
+            cpu->val2 = cpu->reg[0];
         } else if (value == 13) { // CMP R2, R3
-            val1 = cpu->reg[1];
-            val2 = cpu->reg[2];
+            cpu->val1 = cpu->reg[1];
+            cpu->val2 = cpu->reg[2];
         } else if (value == 14) { // CMP R3, R1
-            val1 = cpu->reg[2];
-            val2 = cpu->reg[0];
+            cpu->val1 = cpu->reg[2];
+            cpu->val2 = cpu->reg[0];
         } else if (value == 15) { // CMP R3, R2
-            val1 = cpu->reg[2];
-            val2 = cpu->reg[1];
+            cpu->val1 = cpu->reg[2];
+            cpu->val2 = cpu->reg[1];
         } else cpu->run = FALSE;
         cpu->pc++;
         break;
@@ -204,23 +205,23 @@ void CPU_Execute(CPU* cpu) {
     // ===== JIZ
     case 0xc0: // JIZ <value>
         cpu->pc++;
-        if (val2==0) val1 = 0; 
-        if (val1 == 0)
+        if (cpu->val2==0) cpu->val1 = 0; 
+        if (cpu->val1 == 0)
             cpu->pc = cpu->memory[cpu->pc];
         else cpu->pc++;
         break;
     // ===== JINZ
     case 0xc1: // JINZ <value>
         cpu->pc++;
-        if (val2==0) val1 = 0; 
-        if (val1 != 0)
+        if (cpu->val2==0) cpu->val1 = 0; 
+        if (cpu->val1 != 0)
             cpu->pc = cpu->memory[cpu->pc];
         else cpu->pc++;
         break;
     // ===== JIE
     case 0xc2: // JIE <value>
         cpu->pc++;
-        if (val1 == val2)
+        if (cpu->val1 == cpu->val2)
             cpu->pc = cpu->memory[cpu->pc];
         else cpu->pc++;
         break;
