@@ -9,6 +9,7 @@ typedef enum {
     JIZ,
     JINZ,
     JIE,
+    OUT,
     R1,
     R2,
     R3,
@@ -19,16 +20,40 @@ typedef struct {
     TokenType CMD; // mov, add, cmp
     TokenType VAL1; // reg, val
     TokenType VAL2; // reg, val
+    int value;
 } Token;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+class Lexer {
+public:
+    Lexer(const char* line);
+    ~Lexer();
 
-Token GetTokens(const char* line);
+    void next_char();
+    void skip_space();
 
-#ifdef __cplusplus
-}
-#endif 
+    Token cmd_check();
+
+private:
+    const char* _line;
+    int pos;
+    char cur_char;
+
+    const char* keywords[] = {
+        "mov",
+        "add",
+        "cmp",
+        "jz",
+        "jnz",
+        "je",
+        "jmp",
+        "out",
+        // reg
+        "r1",
+        "r2",
+        "r3"
+    };
+
+    const size_t keywords_v = sizeof(keywords) / sizeof(keywords[0]);
+};
 
 #endif 
