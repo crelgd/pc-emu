@@ -177,4 +177,4 @@ class Compiler:
     def write_to_output(self, file_name):
         with open(file_name, "wb") as file:
             for hex_str in self.compiler_out:
-                file_write(bytes.fromhex(hex(hex_str)))
+                file.write(bytes.fromhex(hex_str))

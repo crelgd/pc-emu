@@ -225,6 +225,69 @@ void CPU_Execute(CPU* cpu) {
             cpu->pc = cpu->memory[cpu->pc];
         else cpu->pc++;
         break;
+    // JMPS with reg
+    case 0xc6: // JMP <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+
+        if (value == 10)
+            cpu->pc = cpu->reg[0]; // r1
+        else if (value == 11)
+            cpu->pc = cpu->reg[1]; // r2
+        else if (value == 12)
+            cpu->pc = cpu->reg[2]; // r3
+        else cpu->pc++;
+
+        break;
+
+    case 0xc7: // JIZ <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        if (cpu->val2==0) cpu->val1 = 0; 
+        if (cpu->val1 == 0) {
+            
+            if (value == 10) // r1
+                cpu->pc = cpu->reg[0];
+            else if (value == 11) // r2
+                cpu->pc = cpu->reg[1];
+            else if (value == 12) // r3
+                cpu->pc = cpu->reg[2];
+            else cpu->pc++;
+
+        }
+
+        else cpu->pc++;
+        break;
+
+    case 0xc8: // JINZ <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        if (cpu->val2==0) cpu->val1 = 0; 
+        if (cpu->val1 != 0)
+            if (value == 10) // r1
+                cpu->pc = cpu->reg[0];
+            else if (value == 11) // r2
+                cpu->pc = cpu->reg[1];
+            else if (value == 12) // r3
+                cpu->pc = cpu->reg[2];
+            else cpu->pc++;
+        else cpu->pc++;
+        break;
+
+    case 0xc9: // JIE <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        if (cpu->val1 == cpu->val2) {
+            if (value == 10) // r1
+                cpu->pc = cpu->reg[0];
+            else if (value == 11) // r2
+                cpu->pc = cpu->reg[1];
+            else if (value == 12) // r3
+                cpu->pc = cpu->reg[2];
+            else cpu->pc++;
+        }
+        else cpu->pc++;
+        break;
 
     // ======= OUT
     case 0xd1: // OUT <value> R1
