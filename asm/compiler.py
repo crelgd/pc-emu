@@ -48,6 +48,8 @@ class Compiler:
             self.handle_jie(dest)
         elif instruction == "out":
             self.handle_out(dest, src)
+        elif instruction == "stop":
+            self.handle_STOP()
 
     def handle_mov(self, dest, src):
         if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
@@ -77,29 +79,49 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jmp(self, address):
-        code = "C4"
-        value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
-        self.compiler_out.extend([code, value])
+        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+            code = "C4"
+            value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
+            self.compiler_out.extend([code, value])
+        else:
+            code = self.get_jmp_register_codes(address)
+            self.compiler_out.extend(code.split())
 
     def handle_jiz(self, address):
-        code = "C0"
-        value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
-        self.compiler_out.extend([code, value])
+        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+            code = "C0"
+            value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
+            self.compiler_out.extend([code, value])
+        else:
+            code = self.get_jiz_register_codes(address)
+            self.compiler_out.extend(code.split())
 
     def handle_jinz(self, address):
-        code = "C1"
-        value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
-        self.compiler_out.extend([code, value])
+        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+            code = "C1"
+            value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
+            self.compiler_out.extend([code, value])
+        else:
+            code = self.get_jinz_register_codes(address)
+            self.compiler_out.extend(code.split())
 
     def handle_jie(self, address):
-        code = "C2"
-        value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
-        self.compiler_out.extend([code, value])
+        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+            code = "C2"
+            value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
+            self.compiler_out.extend([code, value])
+        else:
+            code = self.get_jie_register_codes(address)
+            self.compiler_out.extend(code.split())
 
     def handle_out(self, port, reg):
         code = self.get_out_code(reg)
         value = port[2:] if port.startswith('0x') else f"{int(port):02X}"
         self.compiler_out.extend([code, value])
+
+    def handle_STOP(self):
+        code = "FF"
+        self.compiler_out.append(code)
 
     def is_hex(self, s):
         try:
@@ -173,8 +195,40 @@ class Compiler:
         }
         return out_codes.get(register, "UNKNOWN")
 
+    def get_jmp_register_codes(self, dest):
+        out = {
+            "r1": "C6 10",
+            "r2": "C6 11",
+            "r3": "C6 12"
+        } 
+        return out.get(dest, "UNKNOWN")
+
+    def get_jiz_register_codes(self, dest):
+        out = {
+            "r1": "C7 10",
+            "r2": "C7 11",
+            "r3": "C7 12"
+        }
+        return out.get(dest, "UNKNOWN")
+
+    def get_jinz_register_codes(self, dest):
+        out = {
+            "r1": "C8 10",
+            "r2": "C8 11",
+            "r3": "C8 12"
+        }
+        return out.get(dest, "UNKNOWN")
+
+    def get_jie_register_codes(self, dest):
+        out = {
+            "r1": "C9 10",
+            "r2": "C9 11",
+            "r3": "C9 12"
+        }
+        return out.get(dest, "UNKNOWN")
     
     def write_to_output(self, file_name):
         with open(file_name, "wb") as file:
             for hex_str in self.compiler_out:
                 file.write(bytes.fromhex(hex_str))
+            file.write(bytes.fromhex("4D"))
