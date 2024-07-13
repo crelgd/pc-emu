@@ -1,6 +1,3 @@
-from lexer import classify
-
-DEBUG = False
 
 class Compiler:
     def __init__(self, file_name):
@@ -18,38 +15,50 @@ class Compiler:
             in_str = line.strip().split()
             if not in_str:
                 continue
-            for elem in in_str:
-                classification = classify(elem)
-                if DEBUG:
-                    print(f"Instruction: {elem}, {classification}")
 
-            self.process_instruction(in_str)
+            try:
+                self.process_instruction(in_str)
+            except IndexError as e:
+                print(f"Error processing instruction: {line.strip()}")
+                print(f"Error message: {str(e)}")
 
         return self.compiler_out
 
     def process_instruction(self, in_str):
         instruction = in_str[0].lower()
-        dest = in_str[1].replace(',', '')
-        src = in_str[2] if len(in_str) > 2 else None
 
         if instruction == "mov":
+            dest = in_str[1].replace(',', '')
+            src = in_str[2] if len(in_str) > 2 else None
             self.handle_mov(dest, src)
         elif instruction == "add":
+            dest = in_str[1].replace(',', '')
+            src = in_str[2] if len(in_str) > 2 else None
             self.handle_add(dest, src)
         elif instruction == "cmp":
+            dest = in_str[1].replace(',', '')
+            src = in_str[2] if len(in_str) > 2 else None
             self.handle_cmp(dest, src)
         elif instruction == "jmp":
-            self.handle_jmp(dest)
+            address = in_str[1]
+            self.handle_jmp(address)
         elif instruction == "jiz":
-            self.handle_jiz(dest)
+            address = in_str[1]
+            self.handle_jiz(address)
         elif instruction == "jinz":
-            self.handle_jinz(dest)
+            address = in_str[1]
+            self.handle_jinz(address)
         elif instruction == "jie":
-            self.handle_jie(dest)
+            address = in_str[1]
+            self.handle_jie(address)
         elif instruction == "out":
-            self.handle_out(dest, src)
+            port = in_str[1]
+            reg = in_str[2]
+            self.handle_out(port, reg)
         elif instruction == "stop":
             self.handle_STOP()
+        else:
+            print(f"Unknown instruction: {instruction}")
 
     def handle_mov(self, dest, src):
         if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
@@ -79,7 +88,7 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jmp(self, address):
-        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             code = "C4"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
@@ -88,7 +97,7 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jiz(self, address):
-        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             code = "C0"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
@@ -97,7 +106,7 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jinz(self, address):
-        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             code = "C1"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
@@ -106,7 +115,7 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jie(self, address):
-        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             code = "C2"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])

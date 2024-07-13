@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "../emu.h"
-#include "../cpu.h"
-#include "../gpu.h"
+#include "emu.h"
+#include "cpu.h"
+#include "gpu.h"
 
 #define SDL_MAIN_HANDLED
 #include "include/SDL.h"
