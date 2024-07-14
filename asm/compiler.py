@@ -57,6 +57,11 @@ class Compiler:
             self.handle_out(port, reg)
         elif instruction == "stop":
             self.handle_STOP()
+        elif instruction == "call":
+            address = in_str[1]
+            self.handle_call(address)
+        elif instruction == "ret":
+            self.handle_ret()
         else:
             print(f"Unknown instruction: {instruction}")
 
@@ -132,12 +137,38 @@ class Compiler:
         code = "FF"
         self.compiler_out.append(code)
 
+    def handle_call(self, address):
+        if address.startswith("[") and address.endswith("]"):
+            address = address.replace("[", "").replace("]", "")
+            code = "8D"
+        else:
+            code = "83"
+            
+        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
+            value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
+            self.compiler_out.extend([code, value])
+        else:
+            code = self.get_call_code(address)
+            self.compiler_out.extend([code])
+
+    def handle_ret(self):
+        code = "A1 00"
+        self.compiler_out.extend([code])
+
     def is_hex(self, s):
         try:
             int(s, 16)
             return True
         except ValueError:
             return False
+
+    def get_call_code(self, address):
+        out = {
+            "r1": "86 10",
+            "r2": "86 11",
+            "r3": "86 12"
+        }
+        return out.get(address, "UNKNOWN")
 
     def get_mov_code(self, register):
         mov_codes = {
