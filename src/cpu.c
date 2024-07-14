@@ -314,13 +314,13 @@ void CPU_Execute(CPU* cpu) {
     
     case 0x83: // CALL <value>
         cpu->pc++;
-        saved_address = cpu->memory[cpu->pc] // timely
+        saved_address = cpu->memory[cpu->pc]; // timely
         cpu->pc = saved_address;
         break;
 
     case 0x86: // CALL <reg>
         cpu->pc++;
-        value = cpu->memory[cpu->pc]
+        value = cpu->memory[cpu->pc];
         if (value == 10) // r1
             saved_address = cpu->reg[0];
         else if (value == 11) // r2
