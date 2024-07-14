@@ -44,6 +44,8 @@ void CPU_LoadProgram(CPU* cpu, const uint* program, size_t size) {
 void CPU_Execute(CPU* cpu) {
     int value;
 
+    uint saved_address = 0x00; // ! TEMPORARILY
+
     switch (cpu->memory[cpu->pc]) {
     //              ALL MOV
     case 0xe1: // MOV R1 <value>
@@ -308,6 +310,40 @@ void CPU_Execute(CPU* cpu) {
         cpu->vto_port = cpu->reg[2];
         cpu->pc++;
         break;
+
+    
+    case 0x83: // CALL <value>
+        cpu->pc++;
+        saved_address = cpu->memory[cpu->pc] // timely
+        cpu->pc = saved_address;
+        break;
+
+    case 0x86: // CALL <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc]
+        if (value == 10) // r1
+            saved_address = cpu->reg[0];
+        else if (value == 11) // r2
+            saved_address = cpu->reg[1];
+        else if (value == 12) // r3
+            saved_address = cpu->reg[2];
+        cpu->pc = saved_address;
+        break;
+
+    case 0x8d: // CALL [<value>] value by address!
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        saved_address = cpu->memory[value];
+        cpu->pc = saved_address;
+        break;
+
+    case 0xa1: // RET
+        cpu->pc++;
+        value == cpu->memory[cpu->pc];
+        if (value == 0x00)
+            cpu->pc = saved_address;
+        else cpu->pc++;
+        break; 
 
     // END==================================
     case 0xff: // END 

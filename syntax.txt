@@ -68,6 +68,16 @@ JIE R1 | C9 10
 JIE R2 | C9 11
 JIE R3 | C9 12
 
+CALL 0x00 | 83 00
+CALL R1 | 86 10
+CALL R2 | 86 11
+CALL R3 | 86 12
+
+CALL [0x00] | 8D 00
+!value by address
+
+RET | A1 00
+
   I/O
 =======
 OUT 0x80, R1 | D1 80
@@ -81,3 +91,4 @@ B2 B3 B4 B7
 F1 F2 F3 F0 
 C4 C0 C1 C2 C6 C7 C8 C9
 D1 D2 D3
+83 86 8D
