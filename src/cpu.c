@@ -12,6 +12,7 @@ R3 - register 3
 */
 
 #include "cpu.h"
+#include "other.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -232,11 +233,11 @@ void CPU_Execute(CPU* cpu) {
         cpu->pc++;
         value = cpu->memory[cpu->pc];
 
-        if (value == 10)
+        if (value == 0x10)
             cpu->pc = cpu->reg[0]; // r1
-        else if (value == 11)
+        else if (value == 0x11)
             cpu->pc = cpu->reg[1]; // r2
-        else if (value == 12)
+        else if (value == 0x12)
             cpu->pc = cpu->reg[2]; // r3
         else cpu->pc++;
 
@@ -248,11 +249,11 @@ void CPU_Execute(CPU* cpu) {
         if (cpu->val2==0) cpu->val1 = 0; 
         if (cpu->val1 == 0) {
             
-            if (value == 10) // r1
+            if (value == 0x10) // r1
                 cpu->pc = cpu->reg[0];
-            else if (value == 11) // r2
+            else if (value == 0x11) // r2
                 cpu->pc = cpu->reg[1];
-            else if (value == 12) // r3
+            else if (value == 0x12) // r3
                 cpu->pc = cpu->reg[2];
             else cpu->pc++;
 
@@ -266,11 +267,11 @@ void CPU_Execute(CPU* cpu) {
         value = cpu->memory[cpu->pc];
         if (cpu->val2==0) cpu->val1 = 0; 
         if (cpu->val1 != 0)
-            if (value == 10) // r1
+            if (value == 0x10) // r1
                 cpu->pc = cpu->reg[0];
-            else if (value == 11) // r2
+            else if (value == 0x11) // r2
                 cpu->pc = cpu->reg[1];
-            else if (value == 12) // r3
+            else if (value == 0x12) // r3
                 cpu->pc = cpu->reg[2];
             else cpu->pc++;
         else cpu->pc++;
@@ -280,11 +281,11 @@ void CPU_Execute(CPU* cpu) {
         cpu->pc++;
         value = cpu->memory[cpu->pc];
         if (cpu->val1 == cpu->val2) {
-            if (value == 10) // r1
+            if (value == 0x10) // r1
                 cpu->pc = cpu->reg[0];
-            else if (value == 11) // r2
+            else if (value == 0x11) // r2
                 cpu->pc = cpu->reg[1];
-            else if (value == 12) // r3
+            else if (value == 0x12) // r3
                 cpu->pc = cpu->reg[2];
             else cpu->pc++;
         }
@@ -321,11 +322,11 @@ void CPU_Execute(CPU* cpu) {
     case 0x86: // CALL <reg>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        if (value == 10) // r1
+        if (value == 0x10) // r1
             saved_address = cpu->reg[0];
-        else if (value == 11) // r2
+        else if (value == 0x11) // r2
             saved_address = cpu->reg[1];
-        else if (value == 12) // r3
+        else if (value == 0x12) // r3
             saved_address = cpu->reg[2];
         cpu->pc = saved_address;
         break;
@@ -339,11 +340,32 @@ void CPU_Execute(CPU* cpu) {
 
     case 0xa1: // RET
         cpu->pc++;
-        value == cpu->memory[cpu->pc];
+        value = cpu->memory[cpu->pc];
         if (value == 0x00)
             cpu->pc = saved_address;
         else cpu->pc++;
         break; 
+
+    // ===== STACK
+
+    case 0x2a: // PUSH <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        if (value == 0x10) // r1
+            to_stack(cpu, cpu->reg[0]);
+        else if (value == 0x11) // r2
+            to_stack(cpu, cpu->reg[1]);
+        else if (value == 0x12) // r3
+            to_stack(cpu, cpu->reg[2]);
+        cpu->pc++;
+        break;
+
+    case 0x8a: // PUSH <value>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        to_stack(cpu, value);
+        cpu->pc++;
+        break;
 
     // END==================================
     case 0xff: // END 

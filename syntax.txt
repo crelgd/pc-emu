@@ -78,6 +78,15 @@ CALL [0x00] | 8D 00
 
 RET | A1 00
 
+ STACK
+=======
+PUSH R1 | 2A 10
+PUSH R2 | 2A 11
+PUSH R3 | 2A 12
+
+PUSH 0x50 | 8A 50
+
+
   I/O
 =======
 OUT 0x80, R1 | D1 80
@@ -92,3 +101,4 @@ F1 F2 F3 F0
 C4 C0 C1 C2 C6 C7 C8 C9
 D1 D2 D3
 83 86 8D
+2A 8A
