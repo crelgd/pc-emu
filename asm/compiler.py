@@ -62,6 +62,12 @@ class Compiler:
             self.handle_call(address)
         elif instruction == "ret":
             self.handle_ret()
+        elif instruction == "push":
+            value = in_str[1]
+            self.handle_stack_push(value)
+        elif instruction == "pop":
+            value = in_str[1]
+            self.handle_stack_pop(value)
         else:
             print(f"Unknown instruction: {instruction}")
 
@@ -154,6 +160,30 @@ class Compiler:
     def handle_ret(self):
         code = "A1 00"
         self.compiler_out.extend([code])
+
+    def handle_stack_push(self, value):
+        if value.startswith("[") and value.endswith("]"):
+            value = value.replace("[", "").replace("]", "")
+
+        if value.isdigit() or (value.startswith('0x') and self.is_hex(value)):
+            code = "8A"
+            val = value[2:] if value.startswith('0x') else f"{int(value):02X}"
+            self.compiler_out.extend([code, val])
+        else:
+            code = self.get_stack_push_code(value)
+            self.compiler_out.extend([code])
+
+    def handle_stack_pop(self, value):
+        if value.startswith("[") and value.endswith("]"):
+            value = value.replace("[", "").replace("]", "")
+
+        if value.isdigit() or (value.startswith('0x') and self.is_hex(value)):
+            code = "7A"
+            val = value[2:] if value.startswith('0x') else f"{int(value):02X}"
+            self.compiler_out.extend([code, val])
+        else:
+            code = self.get_stack_pop_code(value)
+            self.compiler_out.extend([code])
 
     def is_hex(self, s):
         try:
@@ -266,6 +296,22 @@ class Compiler:
             "r3": "C9 12"
         }
         return out.get(dest, "UNKNOWN")
+
+    def get_stack_push_code(self, value):
+        out = {
+            "r1": "2A 10",
+            "r2": "2A 11",
+            "r3": "2A 12"
+        }
+        return out.get(value, "UNKNOWN")
+
+    def get_stack_pop_code(self, value):
+        out = {
+            "r1": "5A 10",
+            "r2": "5A 11",
+            "r3": "5A 12"
+        }
+        return out.get(value, "UNKNOWN")
     
     def write_to_output(self, file_name):
         with open(file_name, "wb") as file:

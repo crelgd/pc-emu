@@ -45,8 +45,6 @@ void CPU_LoadProgram(CPU* cpu, const uint* program, size_t size) {
 void CPU_Execute(CPU* cpu) {
     int value;
 
-    uint saved_address = 0x00; // ! TEMPORARILY
-
     switch (cpu->memory[cpu->pc]) {
     //              ALL MOV
     case 0xe1: // MOV R1 <value>
@@ -315,34 +313,41 @@ void CPU_Execute(CPU* cpu) {
     
     case 0x83: // CALL <value>
         cpu->pc++;
-        saved_address = cpu->memory[cpu->pc]; // timely
-        cpu->pc = saved_address;
+        value = cpu->memory[cpu->pc]; // timely
+        to_stack(cpu, cpu->pc + 1);
+        cpu->pc = value;
         break;
 
     case 0x86: // CALL <reg>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        if (value == 0x10) // r1
-            saved_address = cpu->reg[0];
-        else if (value == 0x11) // r2
-            saved_address = cpu->reg[1];
-        else if (value == 0x12) // r3
-            saved_address = cpu->reg[2];
-        cpu->pc = saved_address;
+        if (value == 0x10) { // r1
+            to_stack(cpu, cpu->pc + 1);
+            cpu->pc = cpu->reg[0];
+        }
+        else if (value == 0x11) { // r2
+            to_stack(cpu, cpu->pc + 1);
+            cpu->pc = cpu->reg[1];
+        }
+        else if (value == 0x12) { // r3
+            to_stack(cpu, cpu->pc + 1);
+            cpu->pc = cpu->reg[2];
+        }
         break;
 
     case 0x8d: // CALL [<value>] value by address!
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        saved_address = cpu->memory[value];
-        cpu->pc = saved_address;
+        value = cpu->memory[value];
+        to_stack(cpu, cpu->pc + 1);
+        cpu->pc = value;
         break;
 
     case 0xa1: // RET
         cpu->pc++;
         value = cpu->memory[cpu->pc];
         if (value == 0x00)
-            cpu->pc = saved_address;
+            cpu->pc = from_stack(cpu);
         else cpu->pc++;
         break; 
 
@@ -364,6 +369,25 @@ void CPU_Execute(CPU* cpu) {
         cpu->pc++;
         value = cpu->memory[cpu->pc];
         to_stack(cpu, value);
+        cpu->pc++;
+        break;
+
+    case 0x5a: // POP <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        if (value == 0x10) // r1
+            cpu->reg[0] = from_stack(cpu);
+        else if (value == 0x11) // r2
+            cpu->reg[1] = from_stack(cpu);
+        else if (value == 0x12) // r3
+            cpu->reg[2] = from_stack(cpu);
+        cpu->pc++;
+        break;
+
+    case 0x7a: // POP <value>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        cpu->memory[value] = from_stack(cpu);
         cpu->pc++;
         break;
 
