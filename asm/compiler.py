@@ -68,6 +68,9 @@ class Compiler:
         elif instruction == "pop":
             value = in_str[1]
             self.handle_stack_pop(value)
+        elif instruction == "byte":
+            value = in_str[1:]
+            self.handle_byte_add(value)
         else:
             print(f"Unknown instruction: {instruction}")
 
@@ -184,6 +187,15 @@ class Compiler:
         else:
             code = self.get_stack_pop_code(value)
             self.compiler_out.extend([code])
+
+    def handle_byte_add(self, value):
+        for i in range(len(value)):
+            #print(value[i])
+            if (value[i].startswith("0x")):
+                val = value[i][2:]
+            else: 
+                val = f"{int(val):02X}"
+            self.compiler_out.append(val)
 
     def is_hex(self, s):
         try:
