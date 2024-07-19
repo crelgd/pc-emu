@@ -71,6 +71,8 @@ class Compiler:
         elif instruction == "byte":
             value = in_str[1:]
             self.handle_byte_add(value)
+        elif instruction.startswith(";"):
+            pass 
         else:
             print(f"Unknown instruction: {instruction}")
 
