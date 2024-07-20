@@ -1,9 +1,14 @@
+import json
 
 class Compiler:
     def __init__(self, file_name):
         self.file_name = file_name
         self.lines = None
         self.compiler_out = []
+
+        self.program_count = 0
+        self.program_data = "[]"
+        self.program_data = json.loads(self.program_data)
 
     def read_file(self):
         with open(self.file_name, "r") as file:
@@ -25,61 +30,99 @@ class Compiler:
         return self.compiler_out
 
     def process_instruction(self, in_str):
-        instruction = in_str[0].lower()
+        instruction = in_str[0]
 
         if instruction == "mov":
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
+            self.program_count_add(2)
             self.handle_mov(dest, src)
         elif instruction == "add":
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
+            self.program_count_add(2)
             self.handle_add(dest, src)
         elif instruction == "cmp":
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
+            self.program_count_add(2)
             self.handle_cmp(dest, src)
         elif instruction == "jmp":
             address = in_str[1]
+            self.program_count_add(2)
             self.handle_jmp(address)
         elif instruction == "jiz":
             address = in_str[1]
+            self.program_count_add(2)
             self.handle_jiz(address)
         elif instruction == "jinz":
             address = in_str[1]
+            self.program_count_add(2)
             self.handle_jinz(address)
         elif instruction == "jie":
             address = in_str[1]
+            self.program_count_add(2)
             self.handle_jie(address)
         elif instruction == "out":
             port = in_str[1]
             reg = in_str[2]
+            self.program_count_add(2)
             self.handle_out(port, reg)
         elif instruction == "stop":
+            self.program_count_add(1)
             self.handle_STOP()
         elif instruction == "call":
             address = in_str[1]
+            self.program_count_add(2)
             self.handle_call(address)
         elif instruction == "ret":
+            self.program_count_add(2)
             self.handle_ret()
         elif instruction == "push":
             value = in_str[1]
+            self.program_count_add(2)
             self.handle_stack_push(value)
         elif instruction == "pop":
             value = in_str[1]
+            self.program_count_add(2)
             self.handle_stack_pop(value)
         elif instruction == "byte":
             value = in_str[1:]
+            self.program_count_add(len(value))
             self.handle_byte_add(value)
         elif instruction.startswith(";"):
             pass 
+        elif instruction.startswith("!"):
+            label = instruction[1:] # label name
+            self.program_count_save(label)
         else:
             print(f"Unknown instruction: {instruction}")
 
+    def program_count_add(self, count):
+        self.program_count += count
+
+    def program_count_save(self, label):
+        address = format(self.program_count, '02X')
+        new_data = {"label": label, "address": address}
+        self.program_data.append(new_data)
+        json.dumps(self.program_data, ensure_ascii=False, indent=4)
+
+    def program_data_search_address(self, label):
+        for item in self.program_data:
+            if item.get("label") == label:
+                return item.get("address")
+        return None
+
     def handle_mov(self, dest, src):
-        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+        src_label_data = self.program_data_search_address(src)
+
+        if src_label_data:
+            value = src_label_data
             code = self.get_mov_code(dest)
-            value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
+            self.compiler_out.extend([code, value])
+        elif src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+            code = self.get_mov_code(dest)
+            value = src[2:].upper() if src.startswith('0x') else f"{int(src):02X}"
             self.compiler_out.extend([code, value])
         else:
             code = self.get_mov_register_code(dest, src)
@@ -104,7 +147,11 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jmp(self, address):
-        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
+        address_label = self.program_data_search_address(address)
+        if address_label:
+            code = "C4"
+            self.compiler_out.extend([code, address_label])
+        elif address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             code = "C4"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
@@ -113,7 +160,11 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jiz(self, address):
-        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
+        address_label = self.program_data_search_address(address)
+        if address_label:
+            code = "C0"
+            self.compiler_out.extend([code, address_label])
+        elif address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             code = "C0"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
@@ -122,7 +173,11 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jinz(self, address):
-        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
+        address_label = self.program_data_search_address(address)
+        if address_label:
+            code = "C1"
+            self.compiler_out.extend([code, address_label])
+        elif address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             code = "C1"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
@@ -131,7 +186,11 @@ class Compiler:
             self.compiler_out.extend(code.split())
 
     def handle_jie(self, address):
-        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
+        address_label = self.program_data_search_address(address)
+        if address_label:
+            code = "C2"
+            self.compiler_out.extend([code, address_label])
+        elif address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             code = "C2"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
@@ -151,11 +210,16 @@ class Compiler:
     def handle_call(self, address):
         if address.startswith("[") and address.endswith("]"):
             address = address.replace("[", "").replace("]", "")
+            address_label = self.program_data_search_address(address)
             code = "8D"
         else:
+            address_label = self.program_data_search_address(address)
             code = "83"
             
-        if address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
+        if address_label:
+            value = address_label
+            self.compiler_out.extend([code, value])
+        elif address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
         else:
@@ -169,9 +233,16 @@ class Compiler:
     def handle_stack_push(self, value):
         if value.startswith("[") and value.endswith("]"):
             value = value.replace("[", "").replace("]", "")
-
-        if value.isdigit() or (value.startswith('0x') and self.is_hex(value)):
+            value_label = self.program_data_search_address(value)
             code = "8A"
+        else :
+            value_label = self.program_data_search_address(value)
+            code = "00"
+
+        if value_label:
+            val = value_label
+            self.compiler_out.extend([code, val])
+        elif value.isdigit() or (value.startswith('0x') and self.is_hex(value)):
             val = value[2:] if value.startswith('0x') else f"{int(value):02X}"
             self.compiler_out.extend([code, val])
         else:
@@ -181,9 +252,16 @@ class Compiler:
     def handle_stack_pop(self, value):
         if value.startswith("[") and value.endswith("]"):
             value = value.replace("[", "").replace("]", "")
-
-        if value.isdigit() or (value.startswith('0x') and self.is_hex(value)):
+            value_label = self.program_data_search_address(value)
             code = "7A"
+        else :
+            value_label = self.program_data_search_address(value)
+            code = "00"
+
+        if value_label:
+            val = value_label
+            self.compiler_out.extend([code, val])
+        elif value.isdigit() or (value.startswith('0x') and self.is_hex(value)):
             val = value[2:] if value.startswith('0x') else f"{int(value):02X}"
             self.compiler_out.extend([code, val])
         else:
