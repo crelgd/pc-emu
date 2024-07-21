@@ -14,6 +14,18 @@ class Compiler:
         with open(self.file_name, "r") as file:
             self.lines = file.readlines()
 
+    ### selects addresses for labels
+    def register_address(self):
+        self.read_file() ## read file
+        for line in self.lines:
+            in_str = line.strip().split() ## split str to array
+            if not line:
+                continue 
+            try:
+                self.process_register(in_str)
+            except IndexError as e:
+                pass
+
     def comp(self):
         self.read_file()
         for line in self.lines:
@@ -29,72 +41,75 @@ class Compiler:
 
         return self.compiler_out
 
+    ### checks instructions
+    def process_register(self, in_str):
+        instruction = in_str[0]
+        if instruction in ["mov", "add", "cmp", "jmp", "jiz", "jnz", "jie", "out", "call",
+            "ret", "push", "pop"]: ## checks instructions which haves 2 bytes
+            self.program_count_add(2)
+        elif instruction in ["stop"]: ## checks emu marks which haves 1 byte
+            self.program_count_add(1)
+        elif instruction.startswith(";"): ## checks comments
+            pass 
+        elif instruction == "byte": ## checks set of bytes
+            self.program_count_add(len(in_str[1:]))
+        elif instruction.startswith("!"):
+            label = instruction[1:] ## label name
+            self.program_count_save(label)
+        else:
+            print(f"Unknown instruction: {instruction}")
+
     def process_instruction(self, in_str):
         instruction = in_str[0]
 
         if instruction == "mov":
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
-            self.program_count_add(2)
             self.handle_mov(dest, src)
         elif instruction == "add":
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
-            self.program_count_add(2)
             self.handle_add(dest, src)
         elif instruction == "cmp":
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
-            self.program_count_add(2)
             self.handle_cmp(dest, src)
         elif instruction == "jmp":
             address = in_str[1]
-            self.program_count_add(2)
             self.handle_jmp(address)
         elif instruction == "jiz":
             address = in_str[1]
-            self.program_count_add(2)
             self.handle_jiz(address)
         elif instruction == "jinz":
             address = in_str[1]
-            self.program_count_add(2)
             self.handle_jinz(address)
         elif instruction == "jie":
             address = in_str[1]
-            self.program_count_add(2)
             self.handle_jie(address)
         elif instruction == "out":
             port = in_str[1]
             reg = in_str[2]
-            self.program_count_add(2)
             self.handle_out(port, reg)
         elif instruction == "stop":
-            self.program_count_add(1)
             self.handle_STOP()
         elif instruction == "call":
             address = in_str[1]
-            self.program_count_add(2)
             self.handle_call(address)
         elif instruction == "ret":
-            self.program_count_add(2)
             self.handle_ret()
         elif instruction == "push":
             value = in_str[1]
-            self.program_count_add(2)
             self.handle_stack_push(value)
         elif instruction == "pop":
             value = in_str[1]
-            self.program_count_add(2)
             self.handle_stack_pop(value)
         elif instruction == "byte":
             value = in_str[1:]
-            self.program_count_add(len(value))
             self.handle_byte_add(value)
         elif instruction.startswith(";"):
             pass 
         elif instruction.startswith("!"):
-            label = instruction[1:] # label name
-            self.program_count_save(label)
+            pass
         else:
             print(f"Unknown instruction: {instruction}")
 
