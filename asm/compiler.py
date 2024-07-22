@@ -44,7 +44,7 @@ class Compiler:
     ### checks instructions
     def process_register(self, in_str):
         instruction = in_str[0]
-        if instruction in ["mov", "add", "cmp", "jmp", "jiz", "jnz", "jie", "out", "call",
+        if instruction in ["mov", "add", "cmp", "jmp", "jiz", "jnz", "jie", "jine", "out", "call",
             "ret", "push", "pop"]: ## checks instructions which haves 2 bytes
             self.program_count_add(2)
         elif instruction in ["stop"]: ## checks emu marks which haves 1 byte
@@ -85,7 +85,10 @@ class Compiler:
             self.handle_jinz(address)
         elif instruction == "jie":
             address = in_str[1]
-            self.handle_jie(address)
+            self.handle_jiz(address)
+        elif instruction == "jinz":
+            address = in_str[1]
+            self.handle_jinz(address)
         elif instruction == "out":
             port = in_str[1]
             reg = in_str[2]
@@ -198,19 +201,6 @@ class Compiler:
             self.compiler_out.extend([code, value])
         else:
             code = self.get_jinz_register_codes(address)
-            self.compiler_out.extend(code.split())
-
-    def handle_jie(self, address):
-        address_label = self.program_data_search_address(address)
-        if address_label:
-            code = "C2"
-            self.compiler_out.extend([code, address_label])
-        elif address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
-            code = "C2"
-            value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
-            self.compiler_out.extend([code, value])
-        else:
-            code = self.get_jie_register_codes(address)
             self.compiler_out.extend(code.split())
 
     def handle_out(self, port, reg):
@@ -393,14 +383,6 @@ class Compiler:
             "r1": "C8 10",
             "r2": "C8 11",
             "r3": "C8 12"
-        }
-        return out.get(dest, "UNKNOWN")
-
-    def get_jie_register_codes(self, dest):
-        out = {
-            "r1": "C9 10",
-            "r2": "C9 11",
-            "r3": "C9 12"
         }
         return out.get(dest, "UNKNOWN")
 
