@@ -44,7 +44,7 @@ class Compiler:
     ### checks instructions
     def process_register(self, in_str):
         instruction = in_str[0]
-        if instruction in ["mov", "add", "cmp", "jmp", "jiz", "jnz", "jie", "jine", "out", "call",
+        if instruction in ["mov", "add", "cmp", "jmp", "jiz", "jinz", "jie", "jine", "out", "call",
             "ret", "push", "pop"]: ## checks instructions which haves 2 bytes
             self.program_count_add(2)
         elif instruction in ["stop"]: ## checks emu marks which haves 1 byte
