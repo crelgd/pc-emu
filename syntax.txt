@@ -31,6 +31,19 @@ ADD R2, R3 | B7 13
 ADD R3, R1 | B7 14
 ADD R3, R2 | B7 15
 
+  SUB
+=======
+SUB R1, 1 | 1E 01
+SUB R2, 1 | 2E 01
+SUB R3, 1 | 3E 01
+
+SUB R1, R2 | 0E 10
+SUB R1, R3 | 0E 11
+SUB R2, R1 | 0E 12
+SUB R2, R3 | 0E 13
+SUB R3, R1 | 0E 14
+SUB R3, R2 | 0E 15
+
   CMP
 =======
 CMP R1, 1 | F1 01

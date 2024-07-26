@@ -44,7 +44,8 @@ class Compiler:
     ### checks instructions
     def process_register(self, in_str):
         instruction = in_str[0]
-        if instruction in ["mov", "add", "cmp", "jmp", "jiz", "jinz", "jie", "jine", "out", "call",
+        if instruction in ["mov", "add", "sub", "cmp", "jmp", 
+            "jiz", "jinz", "jie", "jine", "out", "call",
             "ret", "push", "pop"]: ## checks instructions which haves 2 bytes
             self.program_count_add(2)
         elif instruction in ["stop"]: ## checks emu marks which haves 1 byte
@@ -70,6 +71,10 @@ class Compiler:
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
             self.handle_add(dest, src)
+        elif instruction == "sub":
+            dest = in_str[1].replace(',', '')
+            src = in_str[2] if len(in_str) > 2 else None
+            self.handle_sub(dest, src)
         elif instruction == "cmp":
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
@@ -153,6 +158,15 @@ class Compiler:
             self.compiler_out.extend([code, value])
         else:
             code = self.get_add_register_code(dest, src)
+            self.compiler_out.extend(code.split())
+
+    def handle_sub(self, dest, src):
+        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+            code = self.get_sub_code(dest)
+            value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
+            self.compiler_out.extend([code, value])
+        else:
+            code = self.get_sub_register_code(dest, src)
             self.compiler_out.extend(code.split())
 
     def handle_cmp(self, dest, src):
@@ -332,6 +346,25 @@ class Compiler:
             ("r2", "r3"): "B7 13",
             ("r3", "r1"): "B7 14",
             ("r3", "r2"): "B7 15"
+        }
+        return add_register_codes.get((dest, src), "UNKNOWN")
+
+    def get_sub_code(self, register):
+        add_codes = {
+            "r1": "1E",
+            "r2": "2E",
+            "r3": "3E"
+        }
+        return add_codes.get(register, "UNKNOWN")
+
+    def get_sub_register_code(self, dest, src):
+        add_register_codes = {
+            ("r1", "r2"): "0E 10",
+            ("r1", "r3"): "0E 11",
+            ("r2", "r1"): "0E 12",
+            ("r2", "r3"): "0E 13",
+            ("r3", "r1"): "0E 14",
+            ("r3", "r2"): "0E 15"
         }
         return add_register_codes.get((dest, src), "UNKNOWN")
 
