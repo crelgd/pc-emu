@@ -207,6 +207,92 @@ void CPU_Execute(CPU* cpu) {
         cpu->pc++;
         break;
 
+    //              ALL MUL
+
+    case 0x13: // MUL R1, <value>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        default_mul(cpu, cpu->reg[0], value);
+        cpu->pc++;
+        break;
+
+    case 0x23: // MUL R2, <value>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        default_mul(cpu, cpu->reg[1], value);
+        cpu->pc++;
+        break;
+
+    case 0x33: // MUL R3, <value>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        default_mul(cpu, cpu->reg[2], value);
+        cpu->pc++;
+        break;
+
+    case 0x73: // MUL <reg> <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        if (value == 0x10) // SUB R1, R2
+            default_mul(cpu, cpu->reg[0], cpu->reg[1]);
+        else if (value == 0x11) // SUB R1, R3
+            default_mul(cpu, cpu->reg[0], cpu->reg[2]);
+        else if (value == 0x12) // SUB R2, R1
+            default_mul(cpu, cpu->reg[1], cpu->reg[0]);
+        else if (value == 0x13) // SUB R2, R3
+            default_mul(cpu, cpu->reg[1], cpu->reg[2]);
+        else if (value == 0x14) // SUB R3, R1
+            default_mul(cpu, cpu->reg[2], cpu->reg[0]);
+        else if (value == 0x15) // SUB R3, R2
+            default_mul(cpu, cpu->reg[2], cpu->reg[1]);
+        else cpu->run = FALSE;
+        
+        cpu->pc++;
+        break;
+
+    //              ALL DIV
+
+    case 0x17: // DIV R1, <value>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        default_div(cpu, cpu->reg[0], value);
+        cpu->pc++;
+        break;
+
+    case 0x27: // DIV R2, <value>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        default_div(cpu, cpu->reg[1], value);
+        cpu->pc++;
+        break;
+
+    case 0x37: // DIV R3, <value>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        default_div(cpu, cpu->reg[2], value);
+        cpu->pc++;
+        break;
+
+    case 0x47: // DIV <reg> <reg>
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        if (value == 0x10) // SUB R1, R2
+            default_div(cpu, cpu->reg[0], cpu->reg[1]);
+        else if (value == 0x11) // SUB R1, R3
+            default_div(cpu, cpu->reg[0], cpu->reg[2]);
+        else if (value == 0x12) // SUB R2, R1
+            default_div(cpu, cpu->reg[1], cpu->reg[0]);
+        else if (value == 0x13) // SUB R2, R3
+            default_div(cpu, cpu->reg[1], cpu->reg[2]);
+        else if (value == 0x14) // SUB R3, R1
+            default_div(cpu, cpu->reg[2], cpu->reg[0]);
+        else if (value == 0x15) // SUB R3, R2
+            default_div(cpu, cpu->reg[2], cpu->reg[1]);
+        else cpu->run = FALSE;
+        
+        cpu->pc++;
+        break;
+
     //              ALL CMP
     case 0xf1: // CMP R1 <value>
         cpu->pc++;

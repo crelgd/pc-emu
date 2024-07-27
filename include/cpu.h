@@ -15,10 +15,6 @@ typedef unsigned int uint;
 #define PF 2 // if <value> / 2
 #define SF 3 // if <value> < 0 (have -)
 
-/*!TODO
-sub (if result < 0 CF = 1)
-*/
-
 typedef struct {
     int memory[MEM];
     int reg[REG];

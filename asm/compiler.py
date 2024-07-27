@@ -44,7 +44,8 @@ class Compiler:
     ### checks instructions
     def process_register(self, in_str):
         instruction = in_str[0]
-        if instruction in ["mov", "add", "sub", "cmp", "jmp", 
+        if instruction in ["mov", "add", "sub", "div", "mul",
+            "cmp", "jmp", 
             "jiz", "jinz", "jie", "jine", "out", "call",
             "ret", "push", "pop"]: ## checks instructions which haves 2 bytes
             self.program_count_add(2)
@@ -75,6 +76,14 @@ class Compiler:
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
             self.handle_sub(dest, src)
+        elif instruction == "mul":
+            dest = in_str[1].replace(',', '')
+            src = in_str[2] if len(in_str) > 2 else None
+            self.handle_mul(dest, src)
+        elif instruction == "div":
+            dest = in_str[1].replace(',', '')
+            src = in_str[2] if len(in_str) > 2 else None
+            self.handle_div(dest, src)
         elif instruction == "cmp":
             dest = in_str[1].replace(',', '')
             src = in_str[2] if len(in_str) > 2 else None
@@ -167,6 +176,24 @@ class Compiler:
             self.compiler_out.extend([code, value])
         else:
             code = self.get_sub_register_code(dest, src)
+            self.compiler_out.extend(code.split())
+
+    def handle_mul(self, dest, src):
+        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+            code = self.get_mul_code(dest)
+            value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
+            self.compiler_out.extend([code, value])
+        else:
+            code = self.get_mul_register_code(dest, src)
+            self.compiler_out.extend(code.split())
+
+    def handle_div(self, dest, src):
+        if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
+            code = self.get_div_code(dest)
+            value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
+            self.compiler_out.extend([code, value])
+        else:
+            code = self.get_div_register_code(dest, src)
             self.compiler_out.extend(code.split())
 
     def handle_cmp(self, dest, src):
@@ -367,6 +394,44 @@ class Compiler:
             ("r3", "r2"): "0E 15"
         }
         return add_register_codes.get((dest, src), "UNKNOWN")
+
+    def get_mul_code(self, register):
+        out = {
+            "r1": "13",
+            "r2": "23",
+            "r3": "33"
+        }
+        return out.get(register, "UNKNOWN")
+
+    def get_mul_register_code(self, dest, src):
+        out = {
+            ("r1", "r2"): "73 10",
+            ("r1", "r3"): "73 11",
+            ("r2", "r1"): "73 12",
+            ("r2", "r3"): "73 13",
+            ("r3", "r1"): "73 14",
+            ("r3", "r2"): "73 15"
+        }
+        return out.get((dest, src), "UNKNOWN")
+
+    def get_div_code(self, register):
+        out = {
+            "r1": "17",
+            "r2": "27",
+            "r3": "37"
+        }
+        return out.get(register, "UNKNOWN")
+
+    def get_div_register_code(self, dest, src):
+        out = {
+            ("r1", "r2"): "47 10",
+            ("r1", "r3"): "47 11",
+            ("r2", "r1"): "47 12",
+            ("r2", "r3"): "47 13",
+            ("r3", "r1"): "47 14",
+            ("r3", "r2"): "47 15"
+        }
+        return out.get((dest, src), "UNKNOWN")
 
     def get_cmp_code(self, register):
         cmp_codes = {

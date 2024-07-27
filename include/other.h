@@ -23,6 +23,10 @@ EMU_API void _cmp(CPU* cpu, int val1, int val2);
 
 EMU_API void default_sub(CPU* cpu, int val1, int val2);
 
+EMU_API void default_mul(CPU* cpu, int val1, int val2);
+
+EMU_API void default_div(CPU* cpu, int val1, int val2);
+
 #ifdef __cplusplus
 }
 #endif
