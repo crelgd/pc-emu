@@ -10,11 +10,13 @@ class Compiler:
         self.program_data = "[]"
         self.program_data = json.loads(self.program_data)
 
+        self.registers = ["r1", "r2", "r3"]
+
     def read_file(self):
         with open(self.file_name, "r") as file:
             self.lines = file.readlines()
 
-    ### selects addresses for labels
+    # selects addresses for labels /
     def register_address(self):
         self.read_file() ## read file
         for line in self.lines:
@@ -65,70 +67,116 @@ class Compiler:
         instruction = in_str[0]
 
         if instruction == "mov":
-            dest = in_str[1].replace(',', '')
-            src = in_str[2] if len(in_str) > 2 else None
-            self.handle_mov(dest, src)
+            try:
+                dest = in_str[1].replace(',', '')
+                src = in_str[2] if len(in_str) > 2 else None
+                self.handle_mov(dest, src)
+            except AttributeError as e:
+                print(f"ERROR: {e}\nWrite like this:\n<instruction> <register>, <value/register>")
         elif instruction == "add":
-            dest = in_str[1].replace(',', '')
-            src = in_str[2] if len(in_str) > 2 else None
-            self.handle_add(dest, src)
+            try:
+                dest = in_str[1].replace(',', '')
+                src = in_str[2] if len(in_str) > 2 else None
+                self.handle_add(dest, src)
+            except AttributeError as e:
+                print(f"ERROR: {e}\nWrite like this:\n<instruction> <register>, <value/register>")
         elif instruction == "sub":
-            dest = in_str[1].replace(',', '')
-            src = in_str[2] if len(in_str) > 2 else None
-            self.handle_sub(dest, src)
+            try:
+                dest = in_str[1].replace(',', '')
+                src = in_str[2] if len(in_str) > 2 else None
+                self.handle_sub(dest, src)
+            except AttributeError as e:
+                print(f"ERROR: {e}\nWrite like this:\n<instruction> <register>, <value/register>")
         elif instruction == "mul":
-            dest = in_str[1].replace(',', '')
-            src = in_str[2] if len(in_str) > 2 else None
-            self.handle_mul(dest, src)
+            try:
+                dest = in_str[1].replace(',', '')
+                src = in_str[2] if len(in_str) > 2 else None
+                self.handle_mul(dest, src)
+            except AttributeError as e:
+                print(f"ERROR: {e}\nWrite like this:\n<instruction> <register>, <value/register>")
         elif instruction == "div":
-            dest = in_str[1].replace(',', '')
-            src = in_str[2] if len(in_str) > 2 else None
-            self.handle_div(dest, src)
+            try:
+                dest = in_str[1].replace(',', '')
+                src = in_str[2] if len(in_str) > 2 else None
+                self.handle_div(dest, src)
+            except AttributeError as e:
+                print(f"ERROR: {e}\nWrite like this:\n<instruction> <register>, <value/register>")
         elif instruction == "cmp":
-            dest = in_str[1].replace(',', '')
-            src = in_str[2] if len(in_str) > 2 else None
-            self.handle_cmp(dest, src)
+            try:
+                dest = in_str[1].replace(',', '')
+                src = in_str[2] if len(in_str) > 2 else None
+                self.handle_cmp(dest, src)
+            except AttributeError as e:
+                print(f"ERROR: {e}\nWrite like this:\n<instruction> <register>, <value/register>")
         elif instruction == "jmp":
-            address = in_str[1]
-            self.handle_jmp(address)
+            try:
+                address = in_str[1]
+                self.handle_jmp(address)
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "jiz":
-            address = in_str[1]
-            self.handle_jiz(address)
+            try:
+                address = in_str[1]
+                self.handle_jiz(address)
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "jinz":
-            address = in_str[1]
-            self.handle_jinz(address)
+            try:
+                address = in_str[1]
+                self.handle_jinz(address)
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "jie":
-            address = in_str[1]
-            self.handle_jiz(address)
-        elif instruction == "jinz":
-            address = in_str[1]
-            self.handle_jinz(address)
+            try:
+                address = in_str[1]
+                self.handle_jiz(address)
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "out":
-            port = in_str[1]
-            reg = in_str[2]
-            self.handle_out(port, reg)
+            try:
+                port = in_str[1].replace("," , "")
+                reg = in_str[2]
+                self.handle_out(port, reg)
+            except AttributeError as e:
+                print(f"ERROR: {e}\nWrite like this:\n<instruction> <register>, <value/register>")
         elif instruction == "stop":
-            self.handle_STOP()
+            try:
+                self.handle_STOP()
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "call":
-            address = in_str[1]
-            self.handle_call(address)
+            try:
+                address = in_str[1]
+                self.handle_call(address)
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "ret":
-            self.handle_ret()
+            try:
+                self.handle_ret()
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "push":
-            value = in_str[1]
-            self.handle_stack_push(value)
+            try:
+                value = in_str[1]
+                self.handle_stack_push(value)
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "pop":
-            value = in_str[1]
-            self.handle_stack_pop(value)
+            try:
+                value = in_str[1]
+                self.handle_stack_pop(value)
+            except:
+                print("ERROR: Unknown error")
         elif instruction == "byte":
-            value = in_str[1:]
-            self.handle_byte_add(value)
+            try:
+                value = in_str[1:]
+                self.handle_byte_add(value)
+            except:
+                print("ERROR: Unknown error")
         elif instruction.startswith(";"):
             pass 
         elif instruction.startswith("!"):
             pass
-        else:
-            print(f"Unknown instruction: {instruction}")
 
     def program_count_add(self, count):
         self.program_count += count
@@ -156,54 +204,86 @@ class Compiler:
             code = self.get_mov_code(dest)
             value = src[2:].upper() if src.startswith('0x') else f"{int(src):02X}"
             self.compiler_out.extend([code, value])
+        elif src in ["r1", "r2", "r3"]:
+            if dest in ["r1", "r2", "r3"]:
+                code = self.get_mov_register_code(dest, src)    
+                self.compiler_out.extend(code.split())
+            else:
+                print(f"ERROR: Unknown register '{dest}'")
         else:
-            code = self.get_mov_register_code(dest, src)
-            self.compiler_out.extend(code.split())
+            print(f"ERROR: Not found '{src}'")
 
     def handle_add(self, dest, src):
         if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
             code = self.get_add_code(dest)
             value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
             self.compiler_out.extend([code, value])
+        elif src in self.registers:
+            if dest in self.registers:
+                code = self.get_add_register_code(dest, src)    
+                self.compiler_out.extend(code.split())
+            else:
+                print(f"ERROR: Unknown register '{dest}'")
         else:
-            code = self.get_add_register_code(dest, src)
-            self.compiler_out.extend(code.split())
+            print(f"ERROR: Unknown error")
 
     def handle_sub(self, dest, src):
         if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
             code = self.get_sub_code(dest)
             value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
             self.compiler_out.extend([code, value])
+        elif src in self.registers:
+            if dest in self.registers:
+                code = self.get_sub_register_code(dest, src)    
+                self.compiler_out.extend(code.split())
+            else:
+                print(f"ERROR: Unknown register '{dest}'")
         else:
-            code = self.get_sub_register_code(dest, src)
-            self.compiler_out.extend(code.split())
+            print(f"ERROR: Unknown error")
 
     def handle_mul(self, dest, src):
         if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
             code = self.get_mul_code(dest)
             value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
             self.compiler_out.extend([code, value])
+        elif src in self.registers:
+            if dest in self.registers:
+                code = self.get_mul_register_code(dest, src)    
+                self.compiler_out.extend(code.split())
+            else:
+                print(f"ERROR: Unknown register '{dest}'")
         else:
-            code = self.get_mul_register_code(dest, src)
-            self.compiler_out.extend(code.split())
+            print(f"ERROR: Unknown error")
 
     def handle_div(self, dest, src):
         if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
             code = self.get_div_code(dest)
             value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
             self.compiler_out.extend([code, value])
+        elif src in self.registers:
+            if dest in self.registers:
+                code = self.get_div_register_code(dest, src)    
+                self.compiler_out.extend(code.split())
+            else:
+                print(f"ERROR: Unknown register '{dest}'")
         else:
-            code = self.get_div_register_code(dest, src)
-            self.compiler_out.extend(code.split())
+            print(f"ERROR: Unknown error")
 
     def handle_cmp(self, dest, src):
         if src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
             code = self.get_cmp_code(dest)
             value = src[2:] if src.startswith('0x') else f"{int(src):02X}"
             self.compiler_out.extend([code, value])
+        elif src in self.registers:
+            if dest in self.registers:
+                code = self.get_cmp_register_code(dest, src)    
+                self.compiler_out.extend(code.split())
+            else:
+                print(f"ERROR: Unknown register '{dest}'")
+        elif src not in self.registers:
+            print(f"ERROR: Unknown register '{src}'")
         else:
-            code = self.get_cmp_register_code(dest, src)
-            self.compiler_out.extend(code.split())
+            print(f"ERROR: Unknown error")
 
     def handle_jmp(self, address):
         address_label = self.program_data_search_address(address)
@@ -214,9 +294,13 @@ class Compiler:
             code = "C4"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
-        else:
+        elif address in self.registers:
             code = self.get_jmp_register_codes(address)
             self.compiler_out.extend(code.split())
+        elif address not in self.registers:
+            print(f"ERROR: Unknown register '{address}'")
+        else:
+            print("ERROR: Unknown error")
 
     def handle_jiz(self, address):
         address_label = self.program_data_search_address(address)
@@ -227,9 +311,13 @@ class Compiler:
             code = "C0"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
-        else:
+        elif address in self.registers:
             code = self.get_jiz_register_codes(address)
             self.compiler_out.extend(code.split())
+        elif address not in self.registers:
+            print(f"ERROR: Unknown register '{address}'")
+        else:
+            print("ERROR: Unknown error")
 
     def handle_jinz(self, address):
         address_label = self.program_data_search_address(address)
@@ -240,24 +328,38 @@ class Compiler:
             code = "C1"
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
-        else:
+        elif address in self.registers:
             code = self.get_jinz_register_codes(address)
             self.compiler_out.extend(code.split())
+        elif address not in self.registers:
+            print(f"ERROR: Unknown register '{address}'")
+        else:
+            print("ERROR: Unknown error")
 
     def handle_out(self, port, reg):
-        code = self.get_out_code(reg)
-        value = port[2:] if port.startswith('0x') else f"{int(port):02X}"
-        self.compiler_out.extend([code, value])
+        if reg in self.registers:
+            code = self.get_out_code(reg)
+            value = port[2:] if port.startswith('0x') else f"{int(port):02X}"
+            self.compiler_out.extend([code, value])
+        elif reg not in self.registers:
+            print(f"ERROR: Unknown register: '{reg}'")
+        else:
+            print("ERROR: Unknown error")
 
     def handle_STOP(self):
         code = "FF"
         self.compiler_out.append(code)
 
     def handle_call(self, address):
-        if address.startswith("[") and address.endswith("]"):
-            address = address.replace("[", "").replace("]", "")
-            address_label = self.program_data_search_address(address)
-            code = "8D"
+        if address.startswith("["): # [addr
+            if address.endswith("]"): #addr]
+                address = address.replace("[", "").replace("]", "")
+                address_label = self.program_data_search_address(address)
+                code = "8D"
+            else:
+                print("ERROR: value not closed")
+        elif address.endswith("]"): # addr]
+            print("ERROR: value not opened")
         else:
             address_label = self.program_data_search_address(address)
             code = "83"
@@ -268,22 +370,33 @@ class Compiler:
         elif address.isdigit() or (address.startswith('0x') and self.is_hex(address)):
             value = address[2:] if address.startswith('0x') else f"{int(address):02X}"
             self.compiler_out.extend([code, value])
-        else:
+        elif address in self.registers:
             code = self.get_call_code(address)
             self.compiler_out.extend([code])
+        elif address not in self.registers:
+            print(f"ERROR: Unknown register '{address}'")
+        else:
+            print("ERROR: Unknown error")
 
     def handle_ret(self):
         code = "A1 00"
         self.compiler_out.extend([code])
 
     def handle_stack_push(self, value):
-        if value.startswith("[") and value.endswith("]"):
-            value = value.replace("[", "").replace("]", "")
-            value_label = self.program_data_search_address(value)
-            code = "8A"
-        else :
+        if value.startswith("["): # [addr
+            if value.endswith("]"): #addr]
+                value = value.replace("[", "").replace("]", "")
+                value_label = self.program_data_search_address(value)
+                code = "8A"
+            else:
+                print("ERROR: value not closed")
+        elif value.endswith("]"): # addr]
+            print("ERROR: value not opened")
+        else:
             value_label = self.program_data_search_address(value)
             code = "00"
+            if value not in ["r1", "r2", "r3"]:
+                print("WARNING: If the value is not [], the command code will be '00'")
 
         if value_label:
             val = value_label
@@ -291,18 +404,29 @@ class Compiler:
         elif value.isdigit() or (value.startswith('0x') and self.is_hex(value)):
             val = value[2:] if value.startswith('0x') else f"{int(value):02X}"
             self.compiler_out.extend([code, val])
-        else:
+        elif value in self.registers:
             code = self.get_stack_push_code(value)
             self.compiler_out.extend([code])
+        elif value not in self.registers:
+            print(f"ERROR: Unknown register '{value}'")
+        else:
+            print("ERROR: Unknown error")
 
     def handle_stack_pop(self, value):
-        if value.startswith("[") and value.endswith("]"):
-            value = value.replace("[", "").replace("]", "")
-            value_label = self.program_data_search_address(value)
-            code = "7A"
-        else :
+        if value.startswith("["): # [addr
+            if value.endswith("]"): #addr]
+                value = value.replace("[", "").replace("]", "")
+                value_label = self.program_data_search_address(value)
+                code = "7A"
+            else:
+                print("ERROR: value not closed")
+        elif value.endswith("]"): # addr]
+            print("ERROR: value not opened")
+        else:
             value_label = self.program_data_search_address(value)
             code = "00"
+            if value not in self.registers:
+                print("WARNING: If the value is not [], the command code will be '00'")
 
         if value_label:
             val = value_label
@@ -310,17 +434,25 @@ class Compiler:
         elif value.isdigit() or (value.startswith('0x') and self.is_hex(value)):
             val = value[2:] if value.startswith('0x') else f"{int(value):02X}"
             self.compiler_out.extend([code, val])
-        else:
+        elif value in self.registers:
             code = self.get_stack_pop_code(value)
             self.compiler_out.extend([code])
+        elif value not in self.registers:
+            print(f"ERROR: Unknown register '{value}'")
+        else:
+            print("ERROR: Unknown error")
+
 
     def handle_byte_add(self, value):
         for i in range(len(value)):
             #print(value[i])
             if (value[i].startswith("0x")):
                 val = value[i][2:]
+            elif value[i].startswith(";"):
+                print("ERROR: Comments cannot be left in the 'byte' statement")
+                continue
             else: 
-                val = f"{int(val):02X}"
+                val = f"{int(value[i]):02X}"
             self.compiler_out.append(val)
 
     def is_hex(self, s):
@@ -501,7 +633,10 @@ class Compiler:
         return out.get(value, "UNKNOWN")
     
     def write_to_output(self, file_name):
-        with open(file_name, "wb") as file:
-            for hex_str in self.compiler_out:
-                file.write(bytes.fromhex(hex_str))
-            file.write(bytes.fromhex("4D"))
+        try:
+            with open(file_name, "wb") as file:
+                for hex_str in self.compiler_out:
+                    file.write(bytes.fromhex(hex_str))
+                file.write(bytes.fromhex("4D"))
+        except ValueError as e:
+            print(f"ERROR: Cannot be written to file")
