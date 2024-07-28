@@ -1,3 +1,4 @@
+import binascii
 import json
 
 class Compiler:
@@ -444,16 +445,23 @@ class Compiler:
 
 
     def handle_byte_add(self, value):
-        for i in range(len(value)):
-            #print(value[i])
-            if (value[i].startswith("0x")):
-                val = value[i][2:]
-            elif value[i].startswith(";"):
+        val = ""
+        val2 = ""
+    
+        for item in value:
+            if item.startswith("0x"):
+                val += item[2:]
+            elif item.startswith(";"):
                 print("ERROR: Comments cannot be left in the 'byte' statement")
                 continue
-            else: 
-                val = f"{int(value[i]):02X}"
-            self.compiler_out.append(val)
+            elif item.startswith('"') and item.endswith('"'):
+                val += ''.join(f"{ord(c):02X}" for c in item[1:-1])
+            else:
+                try:
+                    val += f"{int(item):02X}"
+                except ValueError:
+                    print(f"ERROR: Invalid value '{item}'")
+        self.compiler_out.append(val)
 
     def is_hex(self, s):
         try:
