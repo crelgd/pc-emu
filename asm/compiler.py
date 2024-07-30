@@ -201,12 +201,28 @@ class Compiler:
             value = src_label_data
             code = self.get_mov_code(dest)
             self.compiler_out.extend([code, value])
+        # I dont know how best to release this :/
+        elif dest.startswith('$'): # check value change
+            if src not in self.registers: # if not register
+                print("ERROR: Incorrect spelling\n\
+                     -\tmov <address> <only_register>")
+            dest = dest[1:] # del $
+            dest_label_data = self.program_data_search_address(dest) # searching label
+            if dest.startswith('0x'):
+                dest = dest[2:] # del 0x
+            elif dest_label_data: # if label
+                dest = dest_label_data
+            else: dest = f"{int(dest):02X}" # to hex
+
+            code = self.get_mov_address_code(src)
+            self.compiler_out.extend([code, dest]) # write to array
+
         elif src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
             code = self.get_mov_code(dest)
             value = src[2:].upper() if src.startswith('0x') else f"{int(src):02X}"
             self.compiler_out.extend([code, value])
-        elif src in ["r1", "r2", "r3"]:
-            if dest in ["r1", "r2", "r3"]:
+        elif src in self.registers:
+            if dest in self.registers:
                 code = self.get_mov_register_code(dest, src)    
                 self.compiler_out.extend(code.split())
             else:
@@ -483,6 +499,14 @@ class Compiler:
             "r1": "E1",
             "r2": "E2",
             "r3": "E3"
+        }
+        return mov_codes.get(register, "UNKNOWN")
+
+    def get_mov_address_code(self, register):
+        mov_codes = {
+            "r1": "E4",
+            "r2": "E5",
+            "r3": "E6"
         }
         return mov_codes.get(register, "UNKNOWN")
 
