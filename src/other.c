@@ -20,20 +20,22 @@ uint from_stack(CPU *cpu) {
     return cpu->memory[MEM - 1 - offset];
 }
 
-void default_add(CPU* cpu, int val1, int val2) {
-    val1 += val2;
+int default_add(CPU* cpu, int val1, int val2) {
+    int result = val1 + val2;
 
-    if (val1 == 0) CPU_SetFlag(cpu, ZF);
+    if (result == 0) CPU_SetFlag(cpu, ZF);
     else CPU_ClearFlag(cpu, ZF);
 
-    if (val1 > 255) CPU_SetFlag(cpu, CF);
+    if (result > 255) CPU_SetFlag(cpu, CF);
     else CPU_ClearFlag(cpu, CF);
 
-    if (val1 % 2) CPU_SetFlag(cpu, PF);
+    if (result % 2) CPU_SetFlag(cpu, PF);
     else CPU_ClearFlag(cpu, PF);
 
-    if (val1 < 0) CPU_SetFlag(cpu, SF);
+    if (result < 0) CPU_SetFlag(cpu, SF);
     else CPU_ClearFlag(cpu, SF);
+
+    return result;
 }
 
 void _cmp(CPU* cpu, int val1, int val2) {
@@ -47,47 +49,53 @@ void _cmp(CPU* cpu, int val1, int val2) {
     else CPU_ClearFlag(cpu, SF);
 }
 
-void default_sub(CPU* cpu, int val1, int val2) {
-    val1 -= val2;
+int default_sub(CPU* cpu, int val1, int val2) {
+    int result = val1 - val2;
 
-    if (val1 == 0) CPU_SetFlag(cpu, ZF);
+    if (result == 0) CPU_SetFlag(cpu, ZF);
     else CPU_ClearFlag(cpu, ZF);
 
     if (val1 < val2) CPU_SetFlag(cpu, CF);
     else CPU_ClearFlag(cpu, CF);
 
-    if (val1 % 2) CPU_SetFlag(cpu, PF);
+    if (result % 2) CPU_SetFlag(cpu, PF);
     else CPU_ClearFlag(cpu, PF);
 
-    if (val1 < 0) CPU_SetFlag(cpu, SF);
+    if (result < 0) CPU_SetFlag(cpu, SF);
     else CPU_ClearFlag(cpu, SF);
+
+    return result;
 }
 
-void default_mul(CPU* cpu, int val1, int val2) {
-    val1 *= val2;
+int default_mul(CPU* cpu, int val1, int val2) {
+    int result = val1 * val2;
 
-    if (val1 == 0) CPU_SetFlag(cpu, ZF);
+    if (result == 0) CPU_SetFlag(cpu, ZF);
     else CPU_ClearFlag(cpu, ZF);
 
-    if (val1 > 255) CPU_SetFlag(cpu, CF);
+    if (result > 255) CPU_SetFlag(cpu, CF);
     else CPU_ClearFlag(cpu, CF);
 
-    if (val1 % 2) CPU_SetFlag(cpu, PF);
+    if (result % 2) CPU_SetFlag(cpu, PF);
     else CPU_ClearFlag(cpu, PF);
 
-    if (val1 < 0) CPU_SetFlag(cpu, SF);
+    if (result < 0) CPU_SetFlag(cpu, SF);
     else CPU_ClearFlag(cpu, SF);
+
+    return result;
 }
 
-void default_div(CPU* cpu, int val1, int val2) {
-    val1 /= val2;
+int default_div(CPU* cpu, int val1, int val2) {
+    int result = val1 / val2;
 
-    if (val1 == 0) CPU_SetFlag(cpu, ZF);
+    if (result == 0) CPU_SetFlag(cpu, ZF);
     else CPU_ClearFlag(cpu, ZF);
 
-    if (val1 % 2) CPU_SetFlag(cpu, PF);
+    if (result % 2) CPU_SetFlag(cpu, PF);
     else CPU_ClearFlag(cpu, PF);
 
-    if (val1 < 0) CPU_SetFlag(cpu, SF);
+    if (result < 0) CPU_SetFlag(cpu, SF);
     else CPU_ClearFlag(cpu, SF);
+
+    return result;
 }

@@ -126,39 +126,39 @@ void CPU_Execute(CPU* cpu) {
     case 0xb2: // ADD R1 <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_add(cpu, cpu->reg[0], value);
+        cpu->reg[0] = default_add(cpu, cpu->reg[0], value);
         cpu->pc++;
         break;
 
     case 0xb3: // ADD R2 <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_add(cpu, cpu->reg[1], value);
+        cpu->reg[1] = default_add(cpu, cpu->reg[1], value);
         cpu->pc++;
         break;
 
     case 0xb4: // ADD R3 <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_add(cpu, cpu->reg[2], value);
+        cpu->reg[2] = default_add(cpu, cpu->reg[2], value);
         cpu->pc++;
         break;
 
     case 0xb7: // ADD <reg> <reg>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        if (value == 0x10) // MOV R1, R2
-            default_add(cpu, cpu->reg[0], cpu->reg[1]);
-        else if (value == 0x11) // MOV R1, R3
-            default_add(cpu, cpu->reg[0], cpu->reg[2]);
-        else if (value == 0x12) // MOV R2, R1
-            default_add(cpu, cpu->reg[1], cpu->reg[0]);
-        else if (value == 0x13) // MOV R2, R3
-            default_add(cpu, cpu->reg[1], cpu->reg[2]);
-        else if (value == 0x14) // MOV R3, R1
-            default_add(cpu, cpu->reg[2], cpu->reg[0]);
-        else if (value == 0x15) // MOV R3, R2
-            default_add(cpu, cpu->reg[2], cpu->reg[1]);
+        if (value == 0x10) // ADD R1, R2
+            cpu->reg[0] = default_add(cpu, cpu->reg[0], cpu->reg[1]);
+        else if (value == 0x11) // ADD R1, R3
+            cpu->reg[0] = default_add(cpu, cpu->reg[0], cpu->reg[2]);
+        else if (value == 0x12) // ADD R2, R1
+            cpu->reg[1] = default_add(cpu, cpu->reg[1], cpu->reg[0]);
+        else if (value == 0x13) // ADD R2, R3
+            cpu->reg[1] = default_add(cpu, cpu->reg[1], cpu->reg[2]);
+        else if (value == 0x14) // ADD R3, R1
+            cpu->reg[2] = default_add(cpu, cpu->reg[2], cpu->reg[0]);
+        else if (value == 0x15) // ADD R3, R2
+            cpu->reg[2] = default_add(cpu, cpu->reg[2], cpu->reg[1]);
         else cpu->run = FALSE;
         
         cpu->pc++;
@@ -169,21 +169,21 @@ void CPU_Execute(CPU* cpu) {
     case 0x1e: // SUB R1, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_sub(cpu, cpu->reg[0], value);
+        cpu->reg[0] = default_sub(cpu, cpu->reg[0], value);
         cpu->pc++;
         break;
 
     case 0x2e: // SUB R2, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_sub(cpu, cpu->reg[1], value);
+        cpu->reg[1] = default_sub(cpu, cpu->reg[1], value);
         cpu->pc++;
         break;
 
     case 0x3e: // SUB R3, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_sub(cpu, cpu->reg[2], value);
+        cpu->reg[2] = default_sub(cpu, cpu->reg[2], value);
         cpu->pc++;
         break;
 
@@ -191,17 +191,17 @@ void CPU_Execute(CPU* cpu) {
         cpu->pc++;
         value = cpu->memory[cpu->pc];
         if (value == 0x10) // SUB R1, R2
-            default_sub(cpu, cpu->reg[0], cpu->reg[1]);
+            cpu->reg[0] = default_sub(cpu, cpu->reg[0], cpu->reg[1]);
         else if (value == 0x11) // SUB R1, R3
-            default_sub(cpu, cpu->reg[0], cpu->reg[2]);
+            cpu->reg[0] = default_sub(cpu, cpu->reg[0], cpu->reg[2]);
         else if (value == 0x12) // SUB R2, R1
-            default_sub(cpu, cpu->reg[1], cpu->reg[0]);
+            cpu->reg[1] = default_sub(cpu, cpu->reg[1], cpu->reg[0]);
         else if (value == 0x13) // SUB R2, R3
-            default_sub(cpu, cpu->reg[1], cpu->reg[2]);
+            cpu->reg[1] = default_sub(cpu, cpu->reg[1], cpu->reg[2]);
         else if (value == 0x14) // SUB R3, R1
-            default_sub(cpu, cpu->reg[2], cpu->reg[0]);
+            cpu->reg[2] = default_sub(cpu, cpu->reg[2], cpu->reg[0]);
         else if (value == 0x15) // SUB R3, R2
-            default_sub(cpu, cpu->reg[2], cpu->reg[1]);
+            cpu->reg[2] = default_sub(cpu, cpu->reg[2], cpu->reg[1]);
         else cpu->run = FALSE;
         
         cpu->pc++;
@@ -212,39 +212,39 @@ void CPU_Execute(CPU* cpu) {
     case 0x13: // MUL R1, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_mul(cpu, cpu->reg[0], value);
+        cpu->reg[0] = default_mul(cpu, cpu->reg[0], value);
         cpu->pc++;
         break;
 
     case 0x23: // MUL R2, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_mul(cpu, cpu->reg[1], value);
+        cpu->reg[1] = default_mul(cpu, cpu->reg[1], value);
         cpu->pc++;
         break;
 
     case 0x33: // MUL R3, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_mul(cpu, cpu->reg[2], value);
+        cpu->reg[2] = default_mul(cpu, cpu->reg[2], value);
         cpu->pc++;
         break;
 
     case 0x73: // MUL <reg> <reg>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        if (value == 0x10) // SUB R1, R2
-            default_mul(cpu, cpu->reg[0], cpu->reg[1]);
-        else if (value == 0x11) // SUB R1, R3
-            default_mul(cpu, cpu->reg[0], cpu->reg[2]);
-        else if (value == 0x12) // SUB R2, R1
-            default_mul(cpu, cpu->reg[1], cpu->reg[0]);
-        else if (value == 0x13) // SUB R2, R3
-            default_mul(cpu, cpu->reg[1], cpu->reg[2]);
-        else if (value == 0x14) // SUB R3, R1
-            default_mul(cpu, cpu->reg[2], cpu->reg[0]);
-        else if (value == 0x15) // SUB R3, R2
-            default_mul(cpu, cpu->reg[2], cpu->reg[1]);
+        if (value == 0x10) // MUL R1, R2
+            cpu->reg[0] = default_mul(cpu, cpu->reg[0], cpu->reg[1]);
+        else if (value == 0x11) // MUL R1, R3
+            cpu->reg[0] = default_mul(cpu, cpu->reg[0], cpu->reg[2]);
+        else if (value == 0x12) // MUL R2, R1
+            cpu->reg[1] = default_mul(cpu, cpu->reg[1], cpu->reg[0]);
+        else if (value == 0x13) // MUL R2, R3
+            cpu->reg[1] = default_mul(cpu, cpu->reg[1], cpu->reg[2]);
+        else if (value == 0x14) // MUL R3, R1
+            cpu->reg[2] = default_mul(cpu, cpu->reg[2], cpu->reg[0]);
+        else if (value == 0x15) // MUL R3, R2
+            cpu->reg[2] = default_mul(cpu, cpu->reg[2], cpu->reg[1]);
         else cpu->run = FALSE;
         
         cpu->pc++;
@@ -255,39 +255,39 @@ void CPU_Execute(CPU* cpu) {
     case 0x17: // DIV R1, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_div(cpu, cpu->reg[0], value);
+        cpu->reg[0] = default_div(cpu, cpu->reg[0], value);
         cpu->pc++;
         break;
 
     case 0x27: // DIV R2, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_div(cpu, cpu->reg[1], value);
+        cpu->reg[1] = default_div(cpu, cpu->reg[1], value);
         cpu->pc++;
         break;
 
     case 0x37: // DIV R3, <value>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        default_div(cpu, cpu->reg[2], value);
+        cpu->reg[2] = default_div(cpu, cpu->reg[2], value);
         cpu->pc++;
         break;
 
     case 0x47: // DIV <reg> <reg>
         cpu->pc++;
         value = cpu->memory[cpu->pc];
-        if (value == 0x10) // SUB R1, R2
-            default_div(cpu, cpu->reg[0], cpu->reg[1]);
-        else if (value == 0x11) // SUB R1, R3
-            default_div(cpu, cpu->reg[0], cpu->reg[2]);
-        else if (value == 0x12) // SUB R2, R1
-            default_div(cpu, cpu->reg[1], cpu->reg[0]);
-        else if (value == 0x13) // SUB R2, R3
-            default_div(cpu, cpu->reg[1], cpu->reg[2]);
-        else if (value == 0x14) // SUB R3, R1
-            default_div(cpu, cpu->reg[2], cpu->reg[0]);
-        else if (value == 0x15) // SUB R3, R2
-            default_div(cpu, cpu->reg[2], cpu->reg[1]);
+        if (value == 0x10) // DIV R1, R2
+            cpu->reg[0] = default_div(cpu, cpu->reg[0], cpu->reg[1]);
+        else if (value == 0x11) // DIV R1, R3
+            cpu->reg[0] = default_div(cpu, cpu->reg[0], cpu->reg[2]);
+        else if (value == 0x12) // DIV R2, R1
+            cpu->reg[1] = default_div(cpu, cpu->reg[1], cpu->reg[0]);
+        else if (value == 0x13) // DIV R2, R3
+            cpu->reg[1] = default_div(cpu, cpu->reg[1], cpu->reg[2]);
+        else if (value == 0x14) // DIV R3, R1
+            cpu->reg[2] = default_div(cpu, cpu->reg[2], cpu->reg[0]);
+        else if (value == 0x15) // DIV R3, R2
+            cpu->reg[2] = default_div(cpu, cpu->reg[2], cpu->reg[1]);
         else cpu->run = FALSE;
         
         cpu->pc++;
