@@ -3,12 +3,17 @@
 
 #include "globl.h"
 
+#include <stdio.h>
+
 #define SECTOR_SIZE 128
 
 typedef struct ROM {
     int sector;
     int cache[SECTOR_SIZE];
     int counter;
+    FILE* file;
+    
+    int last_byte[1]; 
 } ROM;
 
 #ifdef __cplusplus
@@ -37,6 +42,21 @@ EMU_API int ROM_CheckSector(ROM* rom);
 
 // sector ++
 EMU_API void ROM_SettingSector(ROM* rom);
+
+// Create file read
+// NULL - file not found
+EMU_API ROM* ROM_CreateReader(ROM* rom, const char* filename);
+
+// clear file read
+EMU_API void ROM_CloseReader(ROM* rom);
+
+EMU_API void ROM_ReaderWriteByteToCache(ROM* rom);
+
+// returns sector data
+// 1) create reader
+// 2) read
+// 3) close reader
+EMU_API void ROM_SectorAdder(ROM* rom, int sector);
 
 #ifdef __cplusplus
 }
