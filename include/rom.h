@@ -2,6 +2,7 @@
 #define EMU_ROM_H
 
 #include "globl.h"
+#include "cpu.h"
 
 #include <stdio.h>
 
@@ -12,6 +13,11 @@ typedef struct ROM {
     int cache[SECTOR_SIZE];
     int counter;
     FILE* file;
+
+    int data_io;
+    int data_sector;
+    int data_ram_address;
+    int data_status;
 } ROM;
 
 #ifdef __cplusplus
@@ -55,6 +61,8 @@ EMU_API void ROM_ReaderWriteByteToCache(ROM* rom);
 // 2) read
 // 3) close reader
 EMU_API void ROM_SectorSearch(ROM* rom, int sector, int** data);
+
+EMU_API void ROM_CheckPort(CPU* cpu, ROM* rom);
 
 #ifdef __cplusplus
 }

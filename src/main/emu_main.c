@@ -3,6 +3,7 @@
 #include "emu.h"
 #include "cpu.h"
 #include "gpu.h"
+#include "rom.h"
 
 #define SDL_MAIN_HANDLED
 #include "include/SDL.h"
@@ -24,6 +25,14 @@ int main(int argc, char* argv[]) {
 
     CPU *cpu = CPU_CreateCPU();
     GPU* gpu = GPU_CreateGPU();
+    ROM* rom = ROM_InitRom();
+
+    const char* disk_file = "disk.di";
+
+    if (ROM_CreateReader(rom, disk_file) == NULL) {
+		ROM_Quit(rom);
+		return 1;
+	}
 
     const uint* program = EMU_GetCodeFromFile(filename);
 
@@ -54,6 +63,7 @@ int main(int argc, char* argv[]) {
         if (cpu->pc >= MEM) cpu->run = FALSE;
         CPU_Execute(cpu);
         GPU_CheckPort(cpu, gpu);
+        ROM_CheckPort(cpu, rom);
 
         printf("R1: %d | R2: %d | R3: %d\n", cpu->reg[0], cpu->reg[1], cpu->reg[2]);
 
@@ -73,6 +83,9 @@ int main(int argc, char* argv[]) {
         SDL_Delay(1);
     }
 
+    ROM_CloseReader(rom);
+
+    ROM_Quit(rom);
     GPU_Quit(gpu);
     CPU_Quit(cpu);
     SDL_DestroyWindow(window);

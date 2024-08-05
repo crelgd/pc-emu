@@ -11,6 +11,11 @@ ROM* ROM_InitRom() {
 
     rom->file = NULL;
 
+    rom->data_io = 0;
+    rom->data_ram_address = 0x00;
+    rom->data_sector = 0;
+    rom->data_status = 0;
+
     return rom;
 }
 
@@ -96,8 +101,52 @@ void ROM_SectorSearch(ROM* rom, int sector, int** data) {
     memcpy(*data, rom->cache, SECTOR_SIZE * sizeof(int));
 }
 
-// aдрес диска, i/o, сектор, адрес озу, статус (0-ничего не делать, 1-начать)
-// addr i/o  secr aram stat
-// 0x15 0x16 0x17 0x18 0x19
+/*
+mov r1, 1 ; i/o 1-read 2-write
+out 0x16, r1
 
-// TODO! port system
+mov r1, 2 ; sector num
+out 0x17, r1
+
+mov r1, test_addr ; addr to save
+out 0x18, r1
+
+mov r1, 1 ; status (1-run, 0-none)
+out 0x19, r1
+*/
+
+void ROM_CheckPort(CPU* cpu, ROM* rom) {
+    switch (cpu->port)
+    {
+    // 0x16 - I/O
+    case 0x16:
+        rom->data_io = cpu->vto_port;
+        break;
+
+    // 0x17 - sector num
+    case 0x17:
+        rom->data_sector = cpu->vto_port;
+        break;
+
+    // 0x18 - address to save
+    case 0x18:
+        rom->data_ram_address = cpu->vto_port;
+        break;
+
+    // 0x19 - status
+    case 0x19:
+        rom->data_status = cpu->vto_port;
+        if (rom->data_status == 1) {
+            if (rom->data_io == 1)  { // read
+                int bfr[SECTOR_SIZE];
+                ROM_SectorSearch(rom, rom->data_sector, &bfr);
+                for (int i = 0; i < SECTOR_SIZE; i++) {
+                    cpu->memory[rom->data_ram_address + i] = bfr[i];
+                }
+            }
+            rom->data_status = 0;
+        }
+        break;
+    }
+}
+
