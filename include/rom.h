@@ -12,8 +12,6 @@ typedef struct ROM {
     int cache[SECTOR_SIZE];
     int counter;
     FILE* file;
-    
-    int last_byte[1]; 
 } ROM;
 
 #ifdef __cplusplus
@@ -31,7 +29,7 @@ EMU_API void ROM_Quit(ROM* rom);
 
 // write byte to cache
 // 1 - if last byte in cache == null
-EMU_API int ROM_WriteByte(ROM* rom, int byte);
+EMU_API void ROM_WriteByte(ROM* rom, unsigned char byte);
 
 // delete byte from cache
 EMU_API void ROM_DeleteByte(ROM* rom);
@@ -41,7 +39,7 @@ EMU_API void ROM_DeleteByte(ROM* rom);
 EMU_API int ROM_CheckSector(ROM* rom);
 
 // sector ++
-EMU_API void ROM_SettingSector(ROM* rom);
+EMU_API void ROM_SettingSector(ROM* rom, int sector);
 
 // Create file read
 // NULL - file not found
@@ -56,7 +54,7 @@ EMU_API void ROM_ReaderWriteByteToCache(ROM* rom);
 // 1) create reader
 // 2) read
 // 3) close reader
-EMU_API void ROM_SectorAdder(ROM* rom, int sector);
+EMU_API void ROM_SectorSearch(ROM* rom, int sector, int** data);
 
 #ifdef __cplusplus
 }

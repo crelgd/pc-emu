@@ -5,13 +5,11 @@
 ROM* ROM_InitRom() {
     ROM* rom = (ROM*)malloc(sizeof(ROM));
 
-    rom->sector = -1;
+    rom->sector = 0;
     memset(rom->cache, -1, sizeof(rom->cache));
     rom->counter = 0;
 
     rom->file = NULL;
-
-    rom->last_byte[0] = 0x00;
 
     return rom;
 }
@@ -27,45 +25,44 @@ void ROM_Quit(ROM* rom) {
     }
 }
 
-int ROM_WriteByte(ROM* rom, int byte) {
-    if (byte >= 0xff) {
-        printf("BYTE: %d > 0xff(255)", byte);
+void ROM_WriteByte(ROM* rom, unsigned char byte) {
+    if (byte > 0xff) {
+        printf("BYTE: %d > 0xff(255)\n", byte);
         return;
     } if (rom->counter < 0) {
-        printf("ROM COUNTER: %d < 0", rom->counter);
+        printf("ROM COUNTER: %d < 0\n", rom->counter);
         return;
-    } if (rom->counter >= 0xff) {
-        printf("ROM COUNTER %d > 0xff(255)", rom->counter);
+    } if (rom->counter > SECTOR_SIZE) {
+        printf("ROM COUNTER %d > 0xff(255)\n", rom->counter);
         return;
     }
-    if (ROM_CheckSector(rom) == 1)
-        return 1;
-    else return 0;
 
-    rom->cache[rom->counter] = byte;
+    rom->cache[rom->counter] = (int)byte;
     rom->counter++;
 }
 
 void ROM_DeleteByte(ROM* rom) {
     if (rom->counter < 0) {
-        printf("ROM COUNTER: %d < 0", rom->counter);
+        printf("ROM COUNTER: %d < 0\n", rom->counter);
         return;
     }
 
-    rom->cache[rom->counter] = -1;
     rom->counter--;
+    rom->cache[rom->counter] = -1;
 }
 
 int ROM_CheckSector(ROM* rom) { // if last byte == -1, returns 1
-    if (rom->cache[SECTOR_SIZE-1] != -1) {
-        return 0;
-    } else return 1;
+    if (rom->cache[SECTOR_SIZE-1] == -1) {
+        return 1;
+    } else return 0;
 }
 
-void ROM_SettingSector(ROM* rom) {
-    if (ROM_CheckSector(rom) != 1) {
+void ROM_SettingSector(ROM* rom, int sector) {
+    if (ROM_CheckSector(rom) == 0) {
         rom->sector++;
-        ROM_ClearCache(rom);
+        if (rom->sector == sector) {
+
+        } else ROM_ClearCache(rom);
     }
 }
 
@@ -81,16 +78,22 @@ void ROM_CloseReader(ROM* rom) {
 }
 
 void ROM_ReaderWriteByteToCache(ROM* rom) {
-    if (fread(rom->last_byte, sizeof(int), 1, rom->file) == 1) {
-        ROM_WriteByte(rom, rom->last_byte[0]);
+    unsigned char byte;
+    if (fread(&byte, sizeof(unsigned char), 1, rom->file) == 1) {
+        ROM_WriteByte(rom, byte);
+    } else {
+        printf("READ: Unknown error\n");
+        return;
     }
 }
 
-void ROM_SectorAdder(ROM* rom, int sector) {
+void ROM_SectorSearch(ROM* rom, int sector, int** data) {
     while (rom->sector != sector) { // if current sector != val
         ROM_ReaderWriteByteToCache(rom); // write byte
-        ROM_SettingSector(rom); // sector++
+        ROM_SettingSector(rom, sector); // sector++
     }
+
+    memcpy(*data, rom->cache, SECTOR_SIZE * sizeof(int));
 }
 
 // aдрес диска, i/o, сектор, адрес озу, статус (0-ничего не делать, 1-начать)
