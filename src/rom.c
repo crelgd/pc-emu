@@ -138,11 +138,12 @@ void ROM_CheckPort(CPU* cpu, ROM* rom) {
         rom->data_status = cpu->vto_port;
         if (rom->data_status == 1) {
             if (rom->data_io == 1)  { // read
-                int bfr[SECTOR_SIZE];
+                int* bfr = (int*)malloc(SECTOR_SIZE * sizeof(int));
                 ROM_SectorSearch(rom, rom->data_sector, &bfr);
                 for (int i = 0; i < SECTOR_SIZE; i++) {
                     cpu->memory[rom->data_ram_address + i] = bfr[i];
                 }
+                free(bfr);
             }
             rom->data_status = 0;
         }
