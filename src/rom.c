@@ -146,7 +146,7 @@ void ROM_CheckPort(CPU* cpu, ROM* rom) {
                 free(bfr);
             }
             else if (rom->data_io == 2) { // write
-                int* bfr = (int*)malloc(SECTOR_SIZE * sizeof(int));
+                char* bfr = (int*)malloc(SECTOR_SIZE * sizeof(int));
                 if (bfr == NULL) {
                     printf("bfr not created\n");
                     return;
@@ -173,7 +173,7 @@ void ROM_CheckPort(CPU* cpu, ROM* rom) {
     }
 }
 
-void ROM_WriteToSector(ROM* rom, int* value, int sector, int count) {
+void ROM_WriteToSector(ROM* rom, char* value, int sector, int count) {
     if (sector <= 0) sector = 1; // min sector 1
     if (fseek(rom->file, (sector-1)*SECTOR_SIZE, SEEK_SET) != 0) return;
 
