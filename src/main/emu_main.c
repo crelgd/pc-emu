@@ -62,8 +62,8 @@ int main(int argc, char* argv[]) {
         // RUN EMU
         if (cpu->pc >= MEM) cpu->run = FALSE;
         CPU_Execute(cpu);
-        GPU_CheckPort(cpu, gpu);
         ROM_CheckPort(cpu, rom);
+        GPU_CheckPort(cpu, gpu);
 
         printf("R1: %d | R2: %d | R3: %d\n", cpu->reg[0], cpu->reg[1], cpu->reg[2]);
 
