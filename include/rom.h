@@ -64,6 +64,8 @@ EMU_API void ROM_SectorSearch(ROM* rom, int sector, int** data);
 
 EMU_API void ROM_CheckPort(CPU* cpu, ROM* rom);
 
+EMU_API void ROM_WriteToSector(ROM* rom, int* value[], int sector);
+
 #ifdef __cplusplus
 }
 #endif 

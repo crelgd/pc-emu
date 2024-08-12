@@ -72,7 +72,7 @@ void ROM_SettingSector(ROM* rom, int sector) {
 }
 
 ROM* ROM_CreateReader(ROM* rom, const char* filename) {
-    rom->file = fopen(filename, "rb");
+    rom->file = fopen(filename, "rb+");
     if (rom->file == NULL) return NULL;
     return rom;
 }
@@ -145,9 +145,25 @@ void ROM_CheckPort(CPU* cpu, ROM* rom) {
                 }
                 free(bfr);
             }
+            else if (rom->data_io == 2) { // write
+                int* bfr = (int*)malloc(SECTOR_SIZE * sizeof(int));
+                for (int i = 0; i < SECTOR_SIZE; i++) {
+                    bfr[i] = cpu->memory[rom->data_ram_address + i];
+                }
+                ROM_WriteToSector(rom, bfr, rom->data_sector);
+                free(bfr);
+            }
             rom->data_status = 0;
         }
         break;
     }
 }
 
+void ROM_WriteToSector(ROM* rom, int* value[], int sector) {
+    if (sector <= 0) sector = 1; // min sector 1
+    if (fseek(rom->file, (sector-1)*SECTOR_SIZE, SEEK_SET) != 0) return;
+
+    for (int i = 0; i < SECTOR_SIZE; i++) {
+        fwrite(value[i], sizeof(int), 1, rom->file);
+    }
+}
