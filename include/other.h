@@ -27,6 +27,8 @@ EMU_API int default_mul(CPU* cpu, int val1, int val2);
 
 EMU_API int default_div(CPU* cpu, int val1, int val2);
 
+EMU_API int get_result_from_two_bytes(int high_byte, int low_byte);
+
 #ifdef __cplusplus
 }
 #endif
