@@ -8,4 +8,6 @@ set(emu_s
     rom.c
 )
 
-add_library(emu SHARED ${emu_s})
+set(EMU_LIB emucore110)
+
+add_library(${EMU_LIB} SHARED ${emu_s})

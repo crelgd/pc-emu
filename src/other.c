@@ -103,3 +103,11 @@ int default_div(CPU* cpu, int val1, int val2) {
 int get_result_from_two_bytes(int high_byte, int low_byte) {
     return (high_byte << 8) + low_byte;
 }
+
+int get_low_byte_from_value(int value) {
+    return value & 0xff;
+}
+
+int get_high_byte_from_value(int value) {
+    return (value >> 8) & 0xff; 
+}

@@ -3,11 +3,12 @@
 /// reg[0] - r1
 /// reg[1] - r2
 /// reg[2] - r3
-/// reg[3] - flags
+/// reg[3] - r4
 ///
 /// R1 - register 1
 /// R2 - register 2
 /// R3 - register 3
+/// R4 - register 4 (16 bit)
 /// flags - inaccessible register
 ///
 /// <value> - (int)
@@ -119,6 +120,47 @@ void CPU_Execute(CPU* cpu) {
         cpu->pc++;
         value = cpu->memory[cpu->pc];
         cpu->memory[value] = cpu->reg[2];
+        cpu->pc++;
+        break;
+
+        /////// 16 BIT
+    case 0x5b: // MOV R4 <low byte> <high byte>
+        cpu->pc++;
+        int low_byte = cpu->memory[cpu->pc];
+        cpu->pc++;
+        int high_byte = cpu->memory[cpu->pc];
+        value = get_result_from_two_bytes(high_byte, low_byte);
+        cpu->reg[3] = value;
+        cpu->pc++;
+        break;
+
+    case 0x1b: // MOV <reg> <reg> 
+        cpu->pc++;
+        value = cpu->memory[cpu->pc];
+        if (value == 0x10) // MOV R4, R1
+            cpu->reg[3] = get_result_from_two_bytes(get_high_byte_from_value(cpu->reg[3]), cpu->reg[0]);
+        else if (value == 0x11) // MOV R4, R2
+            cpu->reg[3] = get_result_from_two_bytes(get_high_byte_from_value(cpu->reg[3]), cpu->reg[1]);
+        else if (value == 0x12) // MOV R4, R3
+             cpu->reg[3] = get_result_from_two_bytes(get_high_byte_from_value(cpu->reg[3]), cpu->reg[2]);
+        else if (value == 0x13) // MOV R1, R4
+            cpu->reg[0] = get_high_byte_from_value(cpu->reg[3]);
+        else if (value == 0x14) // MOV R2, R4
+            cpu->reg[1] = get_high_byte_from_value(cpu->reg[3]);
+        else if (value == 0x15) // MOV R3, R4
+            cpu->reg[2] = get_high_byte_from_value(cpu->reg[3]);
+        else cpu->run = FALSE;
+        
+        cpu->pc++;
+        break;
+
+    case 0x3b: // MOV <value> R4
+        cpu->pc++;
+        int low_byte = cpu->memory[cpu->pc];
+        cpu->pc++;
+        int high_byte = cpu->memory[cpu->pc];
+        value = get_result_from_two_bytes(high_byte, low_byte);
+        cpu->memory[value] = cpu->reg[3];
         cpu->pc++;
         break;
 

@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
         ROM_CheckPort(cpu, rom);
         GPU_CheckPort(cpu, gpu);
 
-        printf("R1: %d | R2: %d | R3: %d\n", cpu->reg[0], cpu->reg[1], cpu->reg[2]);
+        printf("R1: %d | R2: %d | R3: %d | R4: %d\n", cpu->reg[0], cpu->reg[1], cpu->reg[2], cpu->reg[3]);
 
         // DRAW PIXELS
         for (int i = 0; i < WIDTH*HEIGHT; i++) { 
