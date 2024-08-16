@@ -11,7 +11,7 @@ class Compiler:
         self.program_data = "[]"
         self.program_data = json.loads(self.program_data)
 
-        self.registers = ["r1", "r2", "r3"]
+        self.registers = ["r1", "r2", "r3", "r4"]
 
     def read_file(self):
         with open(self.file_name, "r") as file:
@@ -219,7 +219,15 @@ class Compiler:
 
         elif src.isdigit() or (src.startswith('0x') and self.is_hex(src)):
             code = self.get_mov_code(dest)
-            value = src[2:].upper() if src.startswith('0x') else f"{int(src):02X}"
+            
+            # dest == r4 
+            if src.startswith("0x") and dest == self.registers[3]:
+                high_byte = src[2:4]
+                low_byte = src[4:6]
+                value = f"{low_byte} {high_byte}"
+            else:
+                value = src[2:].upper() if src.startswith('0x') else f"{int(src):02X}"
+                
             self.compiler_out.extend([code, value])
         elif src in self.registers:
             if dest in self.registers:
@@ -498,7 +506,8 @@ class Compiler:
         mov_codes = {
             "r1": "E1",
             "r2": "E2",
-            "r3": "E3"
+            "r3": "E3",
+            "r4": "5B"
         }
         return mov_codes.get(register, "UNKNOWN")
 
